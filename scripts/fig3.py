@@ -10,7 +10,7 @@ base = os.path.join(os.path.dirname(__file__), "..", "data")
 D = json.load(open(os.path.join(base, "design.json")))
 
 fig, axs = plt.subplots(1, 3, figsize=(DBL, 2.35))
-plt.subplots_adjust(wspace=0.44, left=0.06, right=0.985, top=0.90,
+plt.subplots_adjust(wspace=0.44, left=0.077, right=0.985, top=0.90,
                     bottom=0.19)
 
 # (a) sigma_E vs Tc*/T scan --------------------------------------------
@@ -24,16 +24,16 @@ for key, c, lab in (("1e-07", C[0], "100 ns"), ("1e-06", C[1],
 iopt = int(np.argmin(D["scans"]["1e-06"]))
 ax.plot(Tcs[iopt], D["scans"]["1e-06"][iopt], "o", color=C[1], ms=4)
 ax.axvline(Tcs[iopt], color="0.6", lw=0.6, ls=":")
-ax.annotate(r"$\Delta^*(T)=2.40\,k_{\rm B}T$", xy=(Tcs[iopt], 40),
-            xytext=(2.4, 300), fontsize=7,
-            arrowprops=dict(arrowstyle="->", lw=0.6))
+ax.annotate(r"$\Delta^*(T)=2.40\,k_{\rm B}T$", xy=(Tcs[iopt] + 0.05,
+            42), xytext=(2.75, 700), fontsize=7,
+            arrowprops=dict(arrowstyle="->", lw=0.6, shrinkB=2))
 ax.axvline(5.7, color=C[3], lw=0.8, ls="--")
-ax.text(5.6, 1.5e3, "Ta/Ti/Au\n(measured)", color=C[3], fontsize=6,
-        ha="right")
+ax.text(5.55, 12, "Ta/Ti/Au\n(measured)", color=C[3], fontsize=6,
+        ha="right", va="bottom")
 ax.set_xlabel(r"$T_c^*/T$   ($T=100$ mK)")
 ax.set_ylabel(r"$\sigma_E/h$ (GHz)")
 ax.set_ylim(8, 1e4)
-panel_label(ax, "(a)")
+panel_label(ax, "(a)", dx=-0.23)
 
 # (b) phase-bias route --------------------------------------------------
 ax = axs[1]
@@ -46,7 +46,7 @@ for tau, c in (("0.78", C[0]), ("0.95", C[1]), ("0.99", C[2])):
         j = int(np.argmin(np.abs(E - 2.4)))
         ax.plot(d["phi"][j], d["sigE"][j], "o", color=c, ms=4)
 ax.legend(loc="upper right", handlelength=1.4)
-ax.text(0.45, 0.06, r"$\circ$: $E(\varphi_0)=2.40\,k_{\rm B}T$",
+ax.text(0.03, 0.05, r"$\circ$: $E(\varphi_0)=2.40\,k_{\rm B}T$",
         transform=ax.transAxes, fontsize=6.5)
 ax.set_xlabel(r"phase bias $\varphi_0$ (rad)")
 ax.set_ylabel(r"$\sigma_E/h$ (GHz)")
@@ -70,9 +70,20 @@ cols = [C[0]] * (len(labels) - 2) + [C[1], C[1]]
 ax.barh(y, vals, color=cols, height=0.62, log=True)
 ax.set_yticks(y, labels, fontsize=6)
 ax.axvline(26, color="k", lw=0.9, ls="--")
-ax.text(29, y[-1] - 0.15, "26 GHz\nphoton", fontsize=6)
+ax.annotate("26 GHz\nphoton", xy=(26, 0.42), xytext=(300, 0.38),
+            fontsize=6, va="center",
+            arrowprops=dict(arrowstyle="->", lw=0.6, shrinkB=1))
+
+
+def fmt(v):
+    if v < 1e3:
+        return f"{v:.3g}"
+    ex = int(np.floor(np.log10(v)))
+    return rf"${v / 10**ex:.1f}\times10^{{{ex}}}$"
+
+
 for yi, v in zip(y, vals):
-    ax.text(v * 1.25, yi - 0.08, f"{v:.3g}", fontsize=5.8, va="center")
+    ax.text(v * 1.25, yi, fmt(v), fontsize=5.8, va="center")
 ax.set_xlabel(r"$\sigma_E/h$ (GHz) at $T=T_c^*/6$, $\tau_{\rm A}=1\,\mu$s")
 ax.set_xlim(0.5, 3e6)
 panel_label(ax, "(c)", dx=-0.32)

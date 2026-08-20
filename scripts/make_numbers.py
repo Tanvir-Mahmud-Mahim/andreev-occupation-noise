@@ -14,6 +14,8 @@ U = json.load(open(os.path.join(base, "universal.json")))
 D = json.load(open(os.path.join(base, "design.json")))
 Cal = json.load(open(os.path.join(base, "calorimetry.json")))
 MP = json.load(open(os.path.join(base, "matched_points.json")))
+LM = json.load(open(os.path.join(base, "limits.json")))
+NL = json.load(open(os.path.join(base, "nonlinear_click.json")))
 
 N = {}
 
@@ -83,6 +85,40 @@ N["anchorRatio"] = round(Cal["anchor_ratio"], 2)
 pb = D["phi_scan"]["0.99"]
 N["phaseBiasBest"] = round(min(pb["sigE"]), 0)
 
+# resolved-limitation numbers (limits.json)
+N["contShareMaxPct"] = round(100 * max(
+    abs(v["share_dIdT"]) for k, v in LM["continuum_shares"].items()
+    if k != "MoRe"), 1)
+N["phaseBiasPenalty"] = int(round(LM["phase_bias_penalty_sigmaE"]))
+N["phaseBiasDkT"] = round(LM["phase_bias_DkT"], 1)
+import math
+f100 = LM["noneq"]["T0.1"]["f"]
+f50 = LM["noneq"]["T0.05"]["f"]
+pen = lambda f, q: math.sqrt(q * (1 - q) / (f * (1 - f)))
+N["noneqHundred"] = round(pen(f100, 1e-4), 1)
+N["noneqFifty"] = int(round(pen(f50, 1e-4)))
+N["tauSpreadPct"] = round(100 * (LM["tau_inhomogeneity"]["0.1"]
+                                 ["deficit_L"] - 1), 1)
+
+# nonlinear click Monte Carlo (nonlinear_click.json)
+K = NL["T0.05_W5.3_L0.5"]
+N["nlCe"] = round(K["Ce_kB"], 1)
+N["nlTc"] = round(K["Tc"], 3)
+N["nlTpeak"] = round(K["T_peak"], 3)
+N["nlSigT"] = round(K["sigT_over_T"], 2)
+N["nlSNR30"] = round(K["snr_mc_T_3e-08"], 1)
+N["nlEff30"] = round(K["eff_T_3e-08"], 3)
+N["nlSNR100"] = round(K["snr_mc_T_1e-07"], 1)
+N["nlEff100"] = round(K["eff_T_1e-07"], 3)
+N["nlSNRmus"] = round(K["snr_mc_T_1e-06"], 1)
+N["nlSNRC30"] = round(K["snr_mc_C_3e-08"], 1)
+N["nlSNR100mK"] = round(NL["T0.1_W5.3_L0.5"]["snr_mc_T_3e-08"], 1)
+Ksm = NL["T0.05_W1.0_L0.1"]
+N["nlSNRsmall"] = round(Ksm["snr_mc_T_3e-08"], 1)
+N["nlCeSmall"] = round(Ksm["Ce_kB"], 1)
+N["nlSigTsmall"] = round(Ksm["sigT_over_T"], 2)
+N["nlTpkSmall"] = round(Ksm["T_peak"], 2)
+
 # LaTeX macro names (letters only; these are the names used in main.tex)
 MACROS = {
     "DeficitShortMaxPct": N["deficitShortMaxPct"],
@@ -110,6 +146,27 @@ MACROS = {
     "AnchorRatio": N["anchorRatio"],
     "SnrTwentySix": int(N["snr26at50"]),
     "DarkFifty": N["dark50"],
+    "ContShareMaxPct": N["contShareMaxPct"],
+    "PhaseBiasPenalty": N["phaseBiasPenalty"],
+    "PhaseBiasDkT": N["phaseBiasDkT"],
+    "NoneqHundred": N["noneqHundred"],
+    "NoneqFifty": N["noneqFifty"],
+    "TauSpreadPct": N["tauSpreadPct"],
+    "NlCe": N["nlCe"],
+    "NlTc": N["nlTc"],
+    "NlTpeak": N["nlTpeak"],
+    "NlSigT": N["nlSigT"],
+    "NlSNRthirty": N["nlSNR30"],
+    "NlEffThirty": f"{N['nlEff30']:.3f}",
+    "NlSNRhundred": N["nlSNR100"],
+    "NlEffHundred": f"{N['nlEff100']:.3f}",
+    "NlSNRmus": N["nlSNRmus"],
+    "NlSNRscenC": N["nlSNRC30"],
+    "NlSNRhundredmK": N["nlSNR100mK"],
+    "NlSNRsmall": N["nlSNRsmall"],
+    "NlCeSmall": N["nlCeSmall"],
+    "NlSigTsmall": N["nlSigTsmall"],
+    "NlTpkSmall": N["nlTpkSmall"],
 }
 j = json.dumps(N, indent=1)
 open(os.path.join(base, "numbers.json"), "w").write(j)

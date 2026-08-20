@@ -27,16 +27,18 @@ ax.text(8.7, 7.4, r"S ($\Delta^*$)", ha="center", fontsize=7)
 ax.text(5.0, 6.35, "graphene", ha="center", fontsize=6.5)
 # gap edges and ABS ladder
 ax.plot([2.6, 7.4], [5.55, 5.55], color="0.45", lw=0.7, ls=":")
-ax.text(7.45, 5.62, r"$\Delta^*$", fontsize=6.5, color="0.3")
+ax.text(7.3, 5.72, r"$\Delta^*$", fontsize=6.5, color="0.3",
+        ha="right")
 for y, c in zip((5.15, 4.95, 4.72), (C[0], C[0], C[0])):
     ax.plot([3.0, 7.0], [y, y], color=c, lw=1.0)
 ax.text(5.0, 4.15, r"Andreev levels $E_m(\varphi)$", ha="center",
         fontsize=6.5, color=C[0])
 # occupation exchange arrows
-ar = FancyArrowPatch((2.95, 5.05), (2.95, 5.85), arrowstyle="<->",
-                     mutation_scale=7, color=C[1], lw=1.0)
+ar = FancyArrowPatch((3.35, 5.20), (3.35, 5.92), arrowstyle="<->",
+                     mutation_scale=6, color=C[1], lw=1.0)
 ax.add_patch(ar)
-ax.text(2.15, 6.0, r"$\tau_{\rm A}$", color=C[1], fontsize=7.5)
+ax.text(3.60, 5.35, r"$\tau_{\rm A}$", color=C[1], fontsize=7.5,
+        ha="left", va="center")
 # readout resonator
 ax.plot([5.0, 5.0], [3.6, 2.2], color="k", lw=0.7)
 th = np.linspace(0, 4 * np.pi, 200)
@@ -51,15 +53,15 @@ panel_label(ax, "(a)", dx=0.0)
 ax = axs[1]
 show = ["0.3", "0.58", "0.78", "0.95", "1.0"]
 cols = [C[0], C[2], C[3], C[4], C[1]]
+names = {"1.0": r"$\tau=1$", "0.95": r"$\tau=0.95$",
+         "0.78": r"$\tau=0.78$", "0.58": r"$\tau=0.58$",
+         "0.3": r"$\tau=0.3$"}
 for k, c in zip(show, cols):
-    h = np.array(D["hI"][k])
-    ax.semilogy(ts, np.abs(h), color=c, lw=1.1)
-    j = np.argmin(np.abs(ts - (0.13 if k == "1.0" else 0.30)))
-ax.text(0.10, 1.1, r"$\tau=1$", color=C[1], fontsize=7)
-ax.text(0.33, 1.5e-2, r"$0.95$", color=C[4], fontsize=6.5)
-ax.text(0.43, 4e-3, r"$0.78$", color=C[3], fontsize=6.5)
-ax.text(0.50, 6e-4, r"$0.58$", color=C[2], fontsize=6.5)
-ax.text(0.56, 6e-5, r"$0.3$", color=C[0], fontsize=6.5)
+    h = np.abs(np.array(D["hI"][k]))
+    ax.semilogy(ts, h, color=c, lw=1.1, label=names[k])
+hnd, lbl = ax.get_legend_handles_labels()
+ax.legend(hnd[::-1], lbl[::-1], loc="lower right", fontsize=5.8,
+          handlelength=1.2, labelspacing=0.25, borderaxespad=0.3)
 ax.set_xlabel(r"$T/T_c^*$")
 ax.set_ylabel(r"$-T_c^*\,\mathrm{d}\ln I_c/\mathrm{d}T$")
 ax.set_xlim(0.06, 0.94); ax.set_ylim(1e-6, 30)
