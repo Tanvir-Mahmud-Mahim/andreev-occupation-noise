@@ -1,0 +1,11 @@
+Ta/Ti/Au     I: achieved/bound = 1.000000
+Ta/Ti/Au     L: achieved/bound = 1.000000
+Ti/Al/Au     I: achieved/bound = 1.000000
+Ti/Al/Au     L: achieved/bound = 1.000000
+Ti/Al(thin)  I: achieved/bound = 1.000000
+Ti/Al(thin)  L: achieved/bound = 1.000000
+R_occ analytic vs numeric: rel err = 3.04e-11
+telegraph S(0): MC=80.3 analytic=80.6 err=0.42%
+knee ratio (expect ~0.5): 0.501
+window-average variance: MC=0.736 analytic=0.806 err=8.69%
+ALL NOISE TESTS PASSED
