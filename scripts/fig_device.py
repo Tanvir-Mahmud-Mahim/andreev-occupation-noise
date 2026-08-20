@@ -99,11 +99,11 @@ for xr in (XL, XR):
     top(xr, YC, ZAU, AU)
 
 fig = plt.figure(figsize=(SGL, 2.95))
-ax = fig.add_axes([-0.13, -0.02, 1.06, 0.86], projection="3d")
+ax = fig.add_axes([-0.17, 0.03, 0.88, 0.85], projection="3d")
 ax.set_axis_off()
 ax.view_init(elev=18, azim=-70)
 ax.set_proj_type("ortho")
-ax.set_box_aspect((10, 7, 3.6), zoom=1.12)
+ax.set_box_aspect((10, 7, 3.6), zoom=0.83)
 pc = Poly3DCollection(verts, facecolors=cols, edgecolors="0.35",
                       linewidths=0.3, zsort="average")
 ax.add_collection3d(pc)
@@ -145,73 +145,47 @@ def p2(x, y, z):
         ax.transData.transform((tx, ty))))
 
 
-def callout(text, pt3, txt2, ha="left", fs=FS, color="0.1"):
-    ov.annotate(text, xy=p2(*pt3), xytext=txt2, ha=ha, va="center",
-                fontsize=fs, color=color,
-                arrowprops=dict(arrowstyle="-", lw=0.5, color=LC,
-                                shrinkA=1.5, shrinkB=0.5))
-
-
-def facetext(pt3, s, fs=FS, color="0.12", dx=0.0, dy=0.0, rot=0.0):
+def facetext(pt3, s, fs=FS, color="0.12"):
     x, y = p2(*pt3)
-    ov.text(x + dx, y + dy, s, fontsize=fs, color=color, ha="center",
-            va="center", rotation=rot, rotation_mode="anchor")
+    ov.text(x, y, s, fontsize=fs, color=color, ha="center",
+            va="center")
 
 
-# labels written directly on the layers ---------------------------------
-facetext((2.4, 3.9, ZAU), "S  (Ta/Ti/Au)\n$\\Delta^*=87\\ \\mu$eV",
-         fs=6.0)
-facetext((3.6, 1.3, ZAU), r"$-\varphi/2$", fs=6.2)
-facetext((8.0, 2.3, ZAU), r"$+\varphi/2$", fs=6.2)
-facetext((1.8, 0.0, -0.36), r"SiO$_2$ (280 nm)", fs=6.0)
-facetext((4.0, 0.0, -1.09), "doped Si back gate", fs=6.0)
-# thin layers keep short callouts (too thin to hold text)
-callout("Au (5 nm)", (XR[1], 2.6, 0.5 * (ZTI + ZAU)), (0.872, 0.600))
-callout("Ti (60 nm)", (XR[1], 2.3, 0.5 * (ZTA + ZTI)), (0.872, 0.525))
-callout("Ta (10 nm,\nadhesion)", (XR[1], 2.0, 0.5 * (ZG + ZTA)),
-        (0.872, 0.430))
-callout("monolayer graphene", (1.8, GY[0], 0.035),
-        (0.030, 0.068), ha="left")
-# supercurrent through the junction ------------------------------------
-q0, q1 = p2(4.00, 3.6, 0.34), p2(6.00, 3.6, 0.34)
+# phases, written directly on the contacts ------------------------------
+facetext((2.9, 3.2, ZAU), r"$-\varphi/2$", fs=6.2)
+facetext((8.1, 2.4, ZAU), r"$+\varphi/2$", fs=6.2)
+
+# process arrows on the device (text lives in the key) ------------------
+q0, q1 = p2(3.55, 3.6, 0.34), p2(6.45, 3.6, 0.34)
 ov.annotate("", xy=q1, xytext=q0,
             arrowprops=dict(arrowstyle="-|>", lw=1.1, color=C[1],
                             mutation_scale=9))
-ov.text(0.5 * (q0[0] + q1[0]) + 0.004, 0.5 * (q0[1] + q1[1]) - 0.055,
-        r"$I_s(\varphi,T_e)$", fontsize=6.2, color=C[1], ha="center",
-        bbox=dict(fc="white", ec="none", alpha=0.55, pad=0.6))
-# quasiparticle exchange: channel <-> contact ---------------------------
-e0, e1 = p2(5.55, 5.1, 0.13), p2(6.85, 5.1, 0.60)
+e0, e1 = p2(5.45, 5.2, 0.12), p2(7.25, 5.2, 0.72)
 ov.annotate("", xy=e1, xytext=e0,
             arrowprops=dict(arrowstyle="<|-|>", lw=0.9, color=C[0],
                             mutation_scale=7))
-ov.text(0.5 * (e0[0] + e1[0]) + 0.085, 0.5 * (e0[1] + e1[1]) + 0.080,
-        "quasiparticle\nexchange, $\\tau_{\\rm A}$", fontsize=FS,
-        color=C[0], ha="center")
-# incident microwave photon --------------------------------------------
-ph1 = p2(4.65, 4.5, 0.11)
-phx, phy = 0.255, 0.870
-tt = np.linspace(0, 1, 160)
-wob = 0.011 * np.sin(2 * np.pi * 6.5 * tt) * (1 - 0.65 * tt)
-dxp, dyp = ph1[0] - phx, ph1[1] - phy
-nn = np.hypot(dxp, dyp)
-ux, uy = dxp / nn, dyp / nn
-px = phx + dxp * tt - uy * wob
-py = phy + dyp * tt + ux * wob
-ov.plot(px[:-8], py[:-8], color=C[4], lw=0.9)
-ov.annotate("", xy=ph1, xytext=(px[-9], py[-9]),
-            arrowprops=dict(arrowstyle="-|>", lw=0.9, color=C[4],
-                            mutation_scale=7))
-ov.text(phx - 0.010, phy + 0.030, "microwave photon, $h\\nu$",
-        fontsize=FS, color=C[4], ha="left")
-# electron-phonon cooling ----------------------------------------------
 c0, c1 = p2(6.55, 0.9, 0.06), p2(6.55, 0.9, -1.30)
 ov.annotate("", xy=c1, xytext=c0,
             arrowprops=dict(arrowstyle="-|>", lw=0.9, color=C[2],
                             mutation_scale=7))
-ov.text(c0[0] + 0.022, 0.5 * (c0[1] + c1[1]),
-        "e-ph cooling\n$\\Sigma A\\,(T_e^3-T_p^3)$", fontsize=FS,
-        color=shade(C[2], 0.85), ha="left", va="center")
+
+
+def squiggle(start, end, amp=0.011, cyc=6.5, col=C[4], lw=0.9):
+    tt = np.linspace(0, 1, 160)
+    wob = amp * np.sin(2 * np.pi * cyc * tt) * (1 - 0.65 * tt)
+    dxp, dyp = end[0] - start[0], end[1] - start[1]
+    nn = np.hypot(dxp, dyp)
+    ux, uy = dxp / nn, dyp / nn
+    px = start[0] + dxp * tt - uy * wob
+    py = start[1] + dyp * tt + ux * wob
+    ov.plot(px[:-8], py[:-8], color=col, lw=lw)
+    ov.annotate("", xy=end, xytext=(px[-9], py[-9]),
+                arrowprops=dict(arrowstyle="-|>", lw=lw, color=col,
+                                mutation_scale=7))
+
+
+squiggle((0.415, 0.825), p2(4.50, 5.05, 0.11), cyc=5)
+
 # dimensions ------------------------------------------------------------
 d0, d1 = p2(XL[1], 0.82, 0.02), p2(XR[0], 0.82, 0.02)
 ov.annotate("", xy=d1, xytext=d0,
@@ -227,9 +201,10 @@ ang = np.degrees(np.arctan2(w1[1] - w0[1], w1[0] - w0[0]))
 ov.text(0.5 * (w0[0] + w1[0]) + 0.034, 0.5 * (w0[1] + w1[1]) - 0.040,
         r"$W=5.3\ \mu$m", fontsize=FS, ha="center", rotation=ang,
         rotation_mode="anchor")
-# readout resonator (top right) ----------------------------------------
-r0 = p2(9.15, 5.85, ZAU)
-rx, ry = 0.800, 0.915
+
+# readout resonator (top left, wired to the left contact) ---------------
+r0 = p2(2.4, 5.6, ZAU)
+rx, ry = 0.170, 0.930
 ov.plot([r0[0], rx - 0.055], [r0[1], ry], color="0.15", lw=0.7)
 th = np.linspace(np.pi, 0, 40)
 for k in range(4):
@@ -239,18 +214,74 @@ ov.plot([rx + 0.055, rx + 0.072], [ry, ry], color="0.15", lw=0.7)
 for xc in (rx + 0.072, rx + 0.084):
     ov.plot([xc, xc], [ry - 0.016, ry + 0.016], color="0.15", lw=0.7)
 ov.plot([rx + 0.084, rx + 0.100], [ry, ry], color="0.15", lw=0.7)
-ov.text(rx + 0.024, ry + 0.048,
-        "readout resonator\n$\\nu_r=6$ GHz,  $L_r=2$ nH",
-        fontsize=FS, ha="center", va="center")
+ov.text(rx + 0.115, ry,
+        "readout resonator,\n$\\nu_r=6$ GHz, $L_r=2$ nH",
+        fontsize=FS, ha="left", va="center")
+
 # back-gate terminal ----------------------------------------------------
 g0 = p2(10.0, 1.1, -1.25)
-gx_, gy_ = 0.930, 0.075
+gx_, gy_ = 0.530, 0.130
 ov.plot([g0[0], gx_ - 0.014], [g0[1], gy_], color="0.15", lw=0.7)
 circ = plt.Circle((gx_, gy_), 0.014, fc="white", ec="0.15", lw=0.7,
                   transform=ov.transAxes)
 ov.add_patch(circ)
 ov.text(gx_ + 0.022, gy_, r"$V_{\rm BG}$", fontsize=FS, va="center")
 ov.text(0.012, 0.012, "not to scale", fontsize=5.0, color="0.45")
+
+# ---- key (legend-style labeling, no leader lines) ---------------------
+from matplotlib.patches import FancyBboxPatch, Rectangle
+
+LX, LT = 0.678, 0.712            # swatch x, text x
+FL = 5.6                         # legend font size
+box = FancyBboxPatch((0.663, 0.240), 0.330, 0.715,
+                     boxstyle="round,pad=0.008,rounding_size=0.012",
+                     fc="white", ec="0.80", lw=0.6,
+                     transform=ov.transAxes, zorder=4)
+ov.add_patch(box)
+
+
+def swatch(y, c, label):
+    ov.add_patch(Rectangle((LX, y - 0.011), 0.022, 0.022, fc=c,
+                           ec="0.35", lw=0.4, transform=ov.transAxes,
+                           zorder=5))
+    ov.text(LT, y, label, fontsize=FL, va="center", zorder=5)
+
+
+ov.text(LX, 0.925, "S contact,  $\\Delta^*=87\\ \\mu$eV:",
+        fontsize=FL, va="center", color="0.15", zorder=5)
+swatch(0.878, AU, "Au (5 nm)")
+swatch(0.831, TI, "Ti (60 nm)")
+swatch(0.784, TA, "Ta (10 nm, adhesion)")
+swatch(0.722, GR, "monolayer graphene")
+swatch(0.675, OX, r"SiO$_2$ (280 nm)")
+swatch(0.628, SI, "doped Si back gate")
+
+
+def glyphrow(y, kind, col, label, dy=0.0):
+    xa, xb = LX - 0.008, LX + 0.046
+    if kind == "arrow":
+        ov.annotate("", xy=(xb, y), xytext=(xa, y), zorder=5,
+                    arrowprops=dict(arrowstyle="-|>", lw=0.9,
+                                    color=col, mutation_scale=7))
+    elif kind == "double":
+        ov.annotate("", xy=(xb, y), xytext=(xa, y), zorder=5,
+                    arrowprops=dict(arrowstyle="<|-|>", lw=0.9,
+                                    color=col, mutation_scale=6))
+    elif kind == "wavy":
+        tt = np.linspace(0, 1, 80)
+        ov.plot(xa + (xb - xa) * tt,
+                y + 0.006 * np.sin(2 * np.pi * 3 * tt), color=col,
+                lw=0.9, zorder=5)
+    ov.text(LT + 0.020, y + dy, label, fontsize=FL, va="center",
+            zorder=5)
+
+
+glyphrow(0.560, "arrow", C[1], r"supercurrent $I_s(\varphi,T_e)$")
+glyphrow(0.496, "double", C[0],
+         "quasiparticle exchange,\n$\\tau_{\\rm A}$", dy=-0.012)
+glyphrow(0.412, "wavy", C[4], "microwave photon, $h\\nu$")
+glyphrow(0.348, "arrow", C[2],
+         "e-ph cooling,\n$\\Sigma A\\,(T_e^3-T_p^3)$", dy=-0.012)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig_device.pdf"))
