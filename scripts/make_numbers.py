@@ -1,0 +1,121 @@
+"""Regenerate every number quoted in the manuscript from the simulation
+outputs, as LaTeX macros (paper/numbers.tex) and JSON (data/numbers.json).
+"""
+import sys, os, json
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+import numpy as np
+from constants import KB, H_PLANCK
+from materials import RECIPES
+from sensor_limits import SensorBudget
+from finiteL import FiniteLJunction
+
+base = os.path.join(os.path.dirname(__file__), "..", "data")
+U = json.load(open(os.path.join(base, "universal.json")))
+D = json.load(open(os.path.join(base, "design.json")))
+Cal = json.load(open(os.path.join(base, "calorimetry.json")))
+MP = json.load(open(os.path.join(base, "matched_points.json")))
+
+N = {}
+
+# universality / responsivity
+ts = np.array(U["t"])
+i35 = int(np.argmin(np.abs(ts - 0.35)))
+h03 = np.abs(U["hI"]["0.3"][i35])
+h078 = np.abs(U["hI"]["0.78"][i35])
+N["tauSplit"] = round(h078 / h03, 2)
+N["tauOneExcess"] = round(U["tau1_excess_at_0p2"], 1)
+N["EAlow"] = round(U["EA_over_Delta"]["0.3"], 2)
+N["EAhigh"] = round(U["EA_over_Delta"]["0.78"], 2)
+N["EAone"] = round(U["EA_over_Delta"]["1.0"], 2)
+N["ystar"] = 2.40
+N["optDkT"] = round(D["opt_DkT"], 2)
+N["optTc"] = round(D["opt_Tc"], 3)
+
+# budgets at 100 mK (Ta/Ti/Au) and general
+b100 = [b for b in D["budgets"] if b["label"] == "Ta/Ti/Au"
+        and abs(b["T"] - 0.1) < 1e-6][0]
+N["dTA100"] = round(b100["dT_A_uK"], 0)
+N["dTph100"] = round(b100["dT_ph_uK"], 1)
+N["ratio100"] = round(b100["dT_A_uK"] / b100["dT_ph_uK"], 0)
+N["tauAstar"] = round(b100["tauA_star_ns"], 1)
+N["sigEbest100"] = round(b100["sigE_GHz"], 0)
+N["CAbest"] = round(b100["CA_kB"], 1)
+N["Cebest"] = round(b100["Ce_kB"], 1)
+N["tauTh100"] = round(b100["tau_th_ns"], 1)
+# worst tauA* among the four low-gap recipes at 0.1 K
+worst = min(b["tauA_star_ns"] for b in D["budgets"]
+            if abs(b["T"] - 0.1) < 1e-6 and b["label"].startswith("Ti/Al"))
+N["tauAstarWorstPs"] = round(worst * 1e3, 1)
+
+# spectra
+N["SnuTa"] = round(np.sqrt(D["spectra"]["Ta/Ti/Au"]["Snu"][0]), 0)
+N["SnuFloor"] = round(np.sqrt(D["Snu_floor"]), 0)
+N["SnuKneekHz"] = round(1.0 / (2 * np.pi * 1e-6) / 1e3, 0)
+
+# finite-L deficits
+defs = {}
+for r in RECIPES:
+    fl = FiniteLJunction(r)
+    defs[r.label] = fl.saturation_ratio(0.02, r.Tc / 6.0, "L")
+N["deficitShortMaxPct"] = round(100 * (max(v for k, v in defs.items()
+                                if k != "MoRe") - 1), 1)
+N["deficitMoRePct"] = round(100 * (defs["MoRe"] - 1), 0)
+N["LxiMoRe"] = 0.43
+
+# matched design points
+N["sigEmatched100"] = round(MP["T0.1_tauA1e-06"]["sigE_GHz"], 1)
+N["sigEmatched50"] = round(MP["T0.05_tauA1e-06"]["sigE_GHz"], 2)
+N["sigEmatched50fast"] = round(MP["T0.05_tauA1e-07"]["sigE_GHz"], 2)
+N["snr26at50"] = round(MP["T0.05_tauA1e-06"]["snr26"], 0)
+N["dark50"] = "3\\times10^{-11}"
+N["TcMatched100"] = round(MP["T0.1_tauA1e-06"]["Tc"], 3)
+N["TcMatched50"] = round(MP["T0.05_tauA1e-06"]["Tc"], 3)
+N["gain"] = round(b100["sigE_GHz"] / MP["T0.1_tauA1e-06"]["sigE_GHz"], 0)
+
+# channel correction and anchors
+sb = SensorBudget(RECIPES[0])
+s = sb.sj.andreev_sums(1e-4, 0.1, "L")
+Rtot = (sb.sj.dIdphi0(0.1 + 1e-5) - sb.sj.dIdphi0(0.1 - 1e-5)) / 2e-5
+N["gapChanCorr"] = round(Rtot / s["R_occ"], 2)
+N["anchorRatio"] = round(Cal["anchor_ratio"], 2)
+
+# phase-bias route: best sigma_E for tau=0.99 at 100 mK
+pb = D["phi_scan"]["0.99"]
+N["phaseBiasBest"] = round(min(pb["sigE"]), 0)
+
+# LaTeX macro names (letters only; these are the names used in main.tex)
+MACROS = {
+    "DeficitShortMaxPct": N["deficitShortMaxPct"],
+    "DeficitMoRePct": int(N["deficitMoRePct"]),
+    "TauAstar": N["tauAstar"],
+    "SigEbestHundred": int(N["sigEbest100"]),
+    "SigEmatchedHundred": N["sigEmatched100"],
+    "SigEmatchedFifty": N["sigEmatched50"],
+    "SnuTa": int(N["SnuTa"]),
+    "SnuFloor": int(N["SnuFloor"]),
+    "GapChanCorr": N["gapChanCorr"],
+    "EAlow": N["EAlow"],
+    "EAhigh": N["EAhigh"],
+    "EAone": N["EAone"],
+    "TauSplit": N["tauSplit"],
+    "TauOneExcess": int(round(N["tauOneExcess"])),
+    "CAbest": N["CAbest"],
+    "Cebest": N["Cebest"],
+    "DTAHundred": int(N["dTA100"]),
+    "DTphHundred": N["dTph100"],
+    "RatioHundred": int(N["ratio100"]),
+    "OptTc": N["optTc"],
+    "OptDkT": N["optDkT"],
+    "LxiMoRe": N["LxiMoRe"],
+    "AnchorRatio": N["anchorRatio"],
+    "SnrTwentySix": int(N["snr26at50"]),
+    "DarkFifty": N["dark50"],
+}
+j = json.dumps(N, indent=1)
+open(os.path.join(base, "numbers.json"), "w").write(j)
+with open(os.path.join(os.path.dirname(__file__), "..", "paper",
+                       "numbers.tex"), "w") as f:
+    for k, v in MACROS.items():
+        f.write(f"\\newcommand{{\\n{k}}}{{{v}}}\n")
+print(j)
+print("macros written:", len(MACROS))
