@@ -24,8 +24,8 @@ for key, c, lab in (("1e-07", C[0], "100 ns"), ("1e-06", C[1],
 iopt = int(np.argmin(D["scans"]["1e-06"]))
 ax.plot(Tcs[iopt], D["scans"]["1e-06"][iopt], "o", color=C[1], ms=4)
 ax.axvline(Tcs[iopt], color="0.6", lw=0.6, ls=":")
-ax.annotate(r"$\Delta^*(T)=2.40\,k_{\rm B}T$", xy=(Tcs[iopt] + 0.05,
-            42), xytext=(2.75, 700), fontsize=7,
+ax.annotate(r"$\Delta^*(T)=2.40\,k_{\rm B}T$", xy=(Tcs[iopt] + 0.06,
+            40), xytext=(1.02, 3300), fontsize=7, ha="left",
             arrowprops=dict(arrowstyle="->", lw=0.6, shrinkB=2))
 ax.axvline(5.7, color=C[3], lw=0.8, ls="--")
 ax.text(5.55, 12, "Ta/Ti/Au\n(measured)", color=C[3], fontsize=6,
@@ -83,7 +83,8 @@ def fmt(v):
 
 
 for yi, v in zip(y, vals):
-    ax.text(v * 1.25, yi, fmt(v), fontsize=5.8, va="center")
+    ax.text(v * 1.25, yi, fmt(v), fontsize=5.8, va="center",
+            bbox=dict(fc="white", ec="none", pad=0.4))
 ax.set_xlabel(r"$\sigma_E/h$ (GHz) at $T=T_c^*/6$, $\tau_{\rm A}=1\,\mu$s")
 ax.set_xlim(0.5, 3e6)
 panel_label(ax, "(c)", dx=-0.32)

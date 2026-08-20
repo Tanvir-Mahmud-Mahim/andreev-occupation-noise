@@ -26,8 +26,8 @@ ax.loglog(tA, D["sigE_num_nofloor"], color=C[0], lw=1.1,
 ax.loglog(tA, D["sigE_num"], color=C[1], lw=1.1,
           label="+ readout floor")
 ax.axhline(26, color="k", lw=0.8, ls=":")
-ax.text(1.1e-6, 29, "26 GHz photon", fontsize=6)
-ax.text(2.5e-6, 3.0, r"$\propto\sqrt{\tau_{\rm A}}$", fontsize=7,
+ax.text(3.4e-8, 28, "26 GHz photon", fontsize=6, va="bottom")
+ax.text(2.9e-6, 3.9, r"$\propto\sqrt{\tau_{\rm A}}$", fontsize=7,
         color="0.4", rotation=22)
 ax.legend(loc="upper left", handlelength=1.5, fontsize=5.6)
 ax.set_xlabel(r"$\tau_{\rm A}$ (s)")
@@ -74,7 +74,7 @@ ax.hist(TR["out1"], bins=bins, color=C[0], alpha=0.75,
 ax.axvline(0.5, color="k", lw=0.8, ls=":")
 ax.text(0.475, 62, "threshold", fontsize=6, ha="right", va="center",
         color="0.25", rotation=90)
-ax.text(0.03, 0.93, f"MC SNR = {snr:.1f}\n"
+ax.text(0.03, 0.97, f"MC SNR = {snr:.1f}\n"
         f"efficiency = {eff:.3f}\n"
         "dark fraction = 0/1000",
         transform=ax.transAxes, fontsize=6.2, va="top")
@@ -82,7 +82,7 @@ ax.legend(loc="upper right", fontsize=5.6, handlelength=1.2,
           borderaxespad=0.3)
 ax.set_xlabel("matched-filter score (photon units)")
 ax.set_ylabel("trials per bin")
-ax.set_ylim(0, 150)
+ax.set_ylim(0, 196)
 panel_label(ax, "(c)", dx=-0.20)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",

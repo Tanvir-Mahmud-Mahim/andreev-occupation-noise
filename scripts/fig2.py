@@ -73,15 +73,15 @@ cs = ax.contour(Ts_m, tAs, M, levels=[0], colors="k", linewidths=1.0)
 ax.set_yscale("log")
 ax.set_xlabel(r"$T$ (mK)")
 ax.set_ylabel(r"$\tau_{\rm A}$ (s)")
-ax.text(60, 3e-5, "Andreev\nlimited", fontsize=7, color="w",
-        ha="center")
+ax.text(42, 3e-5, "Andreev\nlimited", fontsize=7, color="w",
+        ha="left")
 ax.text(340, 3e-9, "phonon\nlimited", fontsize=7, color="k",
         ha="center")
 cb = fig.colorbar(pc, ax=ax, pad=0.02, aspect=28)
 cb.set_label(r"$\log_{10}(\delta T_{\rm A}/\delta T_{\rm ph})$",
              fontsize=7)
 cb.ax.tick_params(labelsize=6)
-panel_label(ax, "(c)", dx=-0.30)
+panel_label(ax, "(c)", dx=-0.35)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig2.pdf"))

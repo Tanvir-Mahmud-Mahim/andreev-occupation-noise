@@ -13,7 +13,7 @@ TR = np.load(os.path.join(base, "click_traces_3e-08.npz"))
 tAs = [3e-8, 1e-7, 3e-7, 1e-6]
 
 fig, axs = plt.subplots(1, 2, figsize=(DBL * 0.78, 2.5))
-plt.subplots_adjust(wspace=0.30, left=0.075, right=0.985, top=0.92,
+plt.subplots_adjust(wspace=0.30, left=0.075, right=0.985, top=0.87,
                     bottom=0.18)
 
 # (a) SNR vs tauA ------------------------------------------------------
@@ -57,7 +57,9 @@ ax.plot(t_us, sm(TR["y_no"]) / 1e6, color="0.65", lw=0.6,
 ax.plot(t_us, sm(TR["y_photon"]) / 1e6, color=C[0], lw=0.6,
         label="photon record")
 ax.plot(t_us, tpl / 1e6, color=C[1], lw=1.3, label="click template")
-ax.legend(loc="upper right", fontsize=5.8, handlelength=1.4)
+ax.legend(loc="lower left", bbox_to_anchor=(0.0, 1.01), ncol=3,
+          fontsize=5.8, handlelength=1.4, frameon=False,
+          borderaxespad=0.0, columnspacing=1.0)
 ax.set_xlabel(r"$t$ ($\mu$s)")
 ax.set_ylabel(r"$\delta\nu_r$ (MHz), 5 ns average")
 panel_label(ax, "(b)", dx=-0.16)
