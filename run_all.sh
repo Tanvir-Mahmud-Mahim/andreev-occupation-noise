@@ -11,6 +11,7 @@ python3 scripts/exp_matched_points.py
 python3 scripts/exp_calorimetry.py
 python3 scripts/exp_limits.py
 python3 scripts/exp_nonlinear_click.py
+python3 scripts/fig_device.py
 python3 scripts/fig1.py
 python3 scripts/fig2.py
 python3 scripts/fig3.py
