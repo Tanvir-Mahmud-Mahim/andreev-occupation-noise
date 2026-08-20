@@ -25,9 +25,12 @@ calorimetry budgets.
 | `src/finiteL.py` | bound-saturation deficits of the finite-length model |
 | `src/sensor_limits.py` | noise budgets, frequency-noise spectra, matched filter |
 | `src/montecarlo.py` | telegraph-noise Monte Carlo |
-| `tests/` | analytic testbench (run `python tests/test_abs.py`, `python tests/test_noise.py`) |
+| `src/noise_general.py` | pair-process master equation, activated exchange, nonequilibrium floor |
+| `tests/` | analytic testbench (run `python tests/test_abs.py`, `test_noise.py`, `test_general.py`) |
 | `scripts/make_bcs_table.py` | tabulates the universal BCS gap function (run first) |
 | `scripts/exp_*.py` | experiments that generate all data in `data/` |
+| `scripts/exp_limits.py` | quantitative resolution of the model approximations (SM Sec. VII) |
+| `scripts/exp_nonlinear_click.py` | nonlinear single-photon click Monte Carlo (SM Sec. VIII) |
 | `scripts/fig*.py` | figure generation |
 | `scripts/make_numbers.py` | regenerates every number quoted in the manuscript |
 
@@ -38,10 +41,11 @@ pip install -r requirements.txt
 bash run_all.sh
 ```
 
-`run_all.sh` runs, in order: the BCS gap tabulation, both testbench
-suites, the three experiment scripts, the matched-design operating
-points, the four figures, and `make_numbers.py`. Total runtime is a few
-minutes on a laptop.
+`run_all.sh` runs, in order: the BCS gap tabulation, the three
+testbench suites, the experiment scripts (including the
+approximation-resolution study and the nonlinear click Monte Carlo),
+the figures, and `make_numbers.py`. Total runtime is some tens of
+minutes on a laptop, dominated by the click Monte Carlo.
 
 ## Testbench pass criteria
 
@@ -51,7 +55,12 @@ bound-state exit into the continuum; analytic occupation responsivity
 to 1e-5; exact Cauchy-Schwarz bound saturation for uniform-transparency
 ensembles to 1e-9; Monte Carlo Lorentzian plateau to 10%, knee
 frequency to 12%, and the variance convention var = S/2t to 25%
-(statistics limited).
+(statistics limited); pair-process generalization: exact singles limit,
+equilibrium-variance invariance, monotone shortening of the effective
+correlation time, generator probability conservation, and the
+zero-frequency spectral density against a four-state Monte Carlo;
+nonlinear click Monte Carlo: energy conservation of the exponential
+integrator to machine precision.
 
 ## License
 
