@@ -1,5 +1,7 @@
-"""Figure: universal responsivity family and channel split.
-(The device schematic is its own figure, scripts/fig_device.py.)"""
+"""Panels (b,c) of Fig. 1: universal responsivity family and
+channel split. Panel (a) is the device schematic
+(scripts/fig_device.py); the two PDFs are combined in the LaTeX
+figure environment."""
 import sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -11,11 +13,11 @@ D = json.load(open(os.path.join(os.path.dirname(__file__), "..",
                                 "data", "universal.json")))
 ts = np.array(D["t"])
 
-fig, axs = plt.subplots(1, 2, figsize=(DBL * 0.72, 2.35))
-plt.subplots_adjust(wspace=0.36, left=0.09, right=0.985, top=0.90,
-                    bottom=0.19)
+fig, axs = plt.subplots(1, 2, figsize=(3.85, 2.72))
+plt.subplots_adjust(wspace=0.40, left=0.115, right=0.98, top=0.93,
+                    bottom=0.17)
 
-# (a) universal responsivity family -------------------------------------
+# (b) universal responsivity family -------------------------------------
 ax = axs[0]
 show = ["0.3", "0.58", "0.78", "0.95", "1.0"]
 cols = [C[0], C[2], C[3], C[4], C[1]]
@@ -31,9 +33,9 @@ ax.legend(hnd[::-1], lbl[::-1], loc="lower right", fontsize=5.8,
 ax.set_xlabel(r"$T/T_c^*$")
 ax.set_ylabel(r"$-T_c^*\,\mathrm{d}\ln I_c/\mathrm{d}T$")
 ax.set_xlim(0.06, 0.94); ax.set_ylim(1e-6, 30)
-panel_label(ax, "(a)")
+panel_label(ax, "(b)")
 
-# (b) channel decomposition for tau = 0.3 -------------------------------
+# (c) channel decomposition for tau = 0.3 -------------------------------
 ax = axs[1]
 tot = np.abs(np.array(D["hL"]["0.3"]))
 occ = np.abs(np.array(D["hL_occ"]["0.3"]))
@@ -46,7 +48,7 @@ ax.legend(loc="lower right", handlelength=1.6)
 ax.set_xlabel(r"$T/T_c^*$")
 ax.set_ylabel(r"$-T_c^*\,\mathrm{d}\ln I'(0)/\mathrm{d}T$")
 ax.set_xlim(0.06, 0.94); ax.set_ylim(1e-7, 30)
-panel_label(ax, "(b)")
+panel_label(ax, "(c)")
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig1.pdf"))

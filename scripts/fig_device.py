@@ -253,6 +253,8 @@ def swatch(y, c, label):
     ov.text(LT, y, label, fontsize=FL, va="center", zorder=5)
 
 
+ov.text(0.012, 0.968, "(a)", fontsize=9, fontweight="bold",
+        va="top", zorder=6)
 ov.text(LX, 0.925, "S contact,  $\\Delta^*=87\\ \\mu$eV:",
         fontsize=FL, va="center", color="0.15", zorder=5)
 swatch(0.878, AU, "Au (5 nm)")
