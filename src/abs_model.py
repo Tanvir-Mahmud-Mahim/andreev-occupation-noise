@@ -291,3 +291,64 @@ def junction_properties(recipe, T_grid, n_phi=121, verbose=False):
             print(f"  T={T*1e3:6.1f} mK  Ic={Ic[i]*1e6:8.4f} uA  "
                   f"I'(0)={dI0[i]*1e6:8.4f} uA/rad")
     return dict(T=T_grid, Ic=Ic, dIdphi0=dI0, a3=a3, scale=scale)
+
+
+def free_energy_components(model, T, n_E=3000):
+    """Bound-state and continuum parts of F(phi) separately (J), for a
+    JunctionModel with its current model.Delta. Used to quantify the
+    continuum share of the inductive response."""
+    if model._levels is None:
+        model.compute_levels()
+    Fb = np.zeros_like(model.phis)
+    Fc = np.zeros_like(model.phis)
+
+    def log2cosh(x):
+        x = np.abs(x)
+        return x + np.log1p(np.exp(-2.0 * x))
+
+    Efac = continuum_phase_grid(n_E)
+    E = model.Delta * Efac
+    tanhw = np.tanh(E / (2.0 * KB * T))
+    xD = model.Delta / (2.0 * KB * T)
+    l2cD = 2.0 * KB * T * (xD + np.log1p(np.exp(-2.0 * xD)))
+    for m in range(model.N):
+        for j, p in enumerate(model.phis):
+            Eb = model._levels[m][j]
+            if len(Eb):
+                Fb[j] += -np.sum(2.0 * KB * T *
+                                 log2cosh(Eb / (2.0 * KB * T)))
+            dph = continuum_delta(p, model.tau, model.cs[m],
+                                  model.Delta, Efac)
+            Fc[j] += (l2cD * dph[0] / np.pi
+                      + np.trapezoid(tanhw * dph, E) / np.pi)
+    return Fb, Fc
+
+
+def continuum_share(recipe, T, n_phi=81, phi0=np.pi / 2):
+    """Fraction of the supercurrent I(phi0) and of its temperature
+    derivative carried by the continuum (E > Delta*) part of the free
+    energy, at phi0 = pi/2 where the decomposition is regular (at
+    phi -> 0 the bound state sits at the gap edge and the two parts
+    individually diverge while their sum stays finite). This quantifies
+    the error of the bound-state-only occupation sums at each recipe's
+    finite L/xi; it vanishes identically in the short-junction limit.
+    Returns dict(share_I, share_dIdT)."""
+
+    def I_parts(TT):
+        m = JunctionModel(recipe, n_phi=n_phi)
+        m.Delta = float(gap_bcs(TT, recipe.Tc, recipe.Delta))
+        Fb, Fc = free_energy_components(m, TT)
+        dphi = m.phis[1] - m.phis[0]
+        j = int(np.argmin(np.abs(m.phis - phi0)))
+        out = []
+        for F in (Fb, Fc):
+            I = (2.0 * E_CHARGE / HBAR) * 2.0 * np.gradient(F, dphi)
+            out.append(float(I[j]))
+        return out
+
+    dT = 2e-3 * recipe.Tc
+    b0, c0 = I_parts(T)
+    bp, cp = I_parts(T + dT)
+    bm, cm = I_parts(T - dT)
+    db, dc = (bp - bm) / (2 * dT), (cp - cm) / (2 * dT)
+    return dict(share_I=c0 / (b0 + c0), share_dIdT=dc / (db + dc))
