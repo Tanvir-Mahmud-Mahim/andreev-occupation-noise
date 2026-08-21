@@ -99,11 +99,13 @@ for xr in (XL, XR):
     top(xr, YC, ZAU, AU)
 
 fig = plt.figure(figsize=(SGL, 2.95))
-ax = fig.add_axes([-0.17, 0.03, 0.88, 0.85], projection="3d")
+under = fig.add_axes([0, 0, 1, 1]); under.axis("off")
+under.set_xlim(0, 1); under.set_ylim(0, 1)
+ax = fig.add_axes([-0.18, 0.06, 0.90, 0.86], projection="3d")
 ax.set_axis_off()
 ax.view_init(elev=18, azim=-70)
 ax.set_proj_type("ortho")
-ax.set_box_aspect((10, 7, 3.6), zoom=0.83)
+ax.set_box_aspect((10, 7, 3.6), zoom=1.00)
 pc = Poly3DCollection(verts, facecolors=cols, edgecolors="0.35",
                       linewidths=0.3, zsort="average")
 ax.add_collection3d(pc)
@@ -134,6 +136,20 @@ for iy in range(int((gy1 - gy0) / (a * np.sqrt(3))) + 2):
 ax.set_xlim(0, 10); ax.set_ylim(0, 7); ax.set_zlim(-1.5, 2.6)
 fig.canvas.draw()          # finalize the 3D transform before projecting
 
+# soft drop shadow under the substrate (underlay, beneath the 3D axes)
+def pshadow(x, y, z):
+    tx, ty, _ = proj3d.proj_transform(x, y, z, ax.get_proj())
+    return tuple(fig.transFigure.inverted().transform(
+        ax.transData.transform((tx, ty))))
+
+
+base = [pshadow(*pt) for pt in ((0, 0, -1.45), (10, 0, -1.45),
+                                (10, 7, -1.45), (0, 7, -1.45))]
+for off, al in (((0.006, -0.010), 0.10), ((0.013, -0.020), 0.06)):
+    under.fill([b[0] + off[0] for b in base],
+               [b[1] + off[1] for b in base], color="k", alpha=al,
+               lw=0)
+
 # ---- 2D annotation overlay -------------------------------------------
 ov = fig.add_axes([0, 0, 1, 1]); ov.axis("off")
 ov.set_xlim(0, 1); ov.set_ylim(0, 1)
@@ -151,9 +167,11 @@ def facetext(pt3, s, fs=FS, color="0.12"):
             va="center")
 
 
-# phases, written directly on the contacts ------------------------------
+# phases and gate voltage, written directly on the layers ---------------
 facetext((2.9, 3.2, ZAU), r"$-\varphi/2$", fs=6.2)
 facetext((8.1, 2.4, ZAU), r"$+\varphi/2$", fs=6.2)
+facetext((5.0, 0.0, -1.13), r"$V_{\rm BG}=30$ V", fs=6.0,
+         color="0.97")
 
 # process arrows on the device (text lives in the key) ------------------
 q0, q1 = p2(3.55, 3.6, 0.34), p2(6.45, 3.6, 0.34)
@@ -186,22 +204,6 @@ def squiggle(start, end, amp=0.011, cyc=6.5, col=C[4], lw=0.9):
 
 squiggle((0.415, 0.825), p2(4.50, 5.05, 0.11), cyc=5)
 
-# dimensions ------------------------------------------------------------
-d0, d1 = p2(XL[1], 0.82, 0.02), p2(XR[0], 0.82, 0.02)
-ov.annotate("", xy=d1, xytext=d0,
-            arrowprops=dict(arrowstyle="<|-|>", lw=0.7, color="0.1",
-                            mutation_scale=6))
-ov.text(0.5 * (d0[0] + d1[0]) + 0.005, 0.5 * (d0[1] + d1[1]) - 0.052,
-        r"$L=0.2\ \mu$m", fontsize=FS, ha="center")
-w0, w1 = p2(11.0, YC[0], -1.45), p2(11.0, YC[1], -1.45)
-ov.annotate("", xy=w1, xytext=w0,
-            arrowprops=dict(arrowstyle="<|-|>", lw=0.7, color="0.1",
-                            mutation_scale=6))
-ang = np.degrees(np.arctan2(w1[1] - w0[1], w1[0] - w0[0]))
-ov.text(0.5 * (w0[0] + w1[0]) + 0.034, 0.5 * (w0[1] + w1[1]) - 0.040,
-        r"$W=5.3\ \mu$m", fontsize=FS, ha="center", rotation=ang,
-        rotation_mode="anchor")
-
 # readout resonator (top left, wired to the left contact) ---------------
 r0 = p2(2.4, 5.6, ZAU)
 rx, ry = 0.170, 0.930
@@ -218,22 +220,15 @@ ov.text(rx + 0.115, ry,
         "readout resonator,\n$\\nu_r=6$ GHz, $L_r=2$ nH",
         fontsize=FS, ha="left", va="center")
 
-# back-gate terminal ----------------------------------------------------
-g0 = p2(10.0, 1.1, -1.25)
-gx_, gy_ = 0.530, 0.130
-ov.plot([g0[0], gx_ - 0.014], [g0[1], gy_], color="0.15", lw=0.7)
-circ = plt.Circle((gx_, gy_), 0.014, fc="white", ec="0.15", lw=0.7,
-                  transform=ov.transAxes)
-ov.add_patch(circ)
-ov.text(gx_ + 0.022, gy_, r"$V_{\rm BG}$", fontsize=FS, va="center")
-ov.text(0.012, 0.012, "not to scale", fontsize=5.0, color="0.45")
+ov.text(0.990, 0.212, "not to scale", fontsize=4.8,
+        color="0.45", ha="right")
 
 # ---- key (legend-style labeling, no leader lines) ---------------------
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
 LX, LT = 0.678, 0.712            # swatch x, text x
 FL = 5.6                         # legend font size
-box = FancyBboxPatch((0.663, 0.240), 0.330, 0.715,
+box = FancyBboxPatch((0.663, 0.225), 0.330, 0.730,
                      boxstyle="round,pad=0.008,rounding_size=0.012",
                      fc="white", ec="0.80", lw=0.6,
                      transform=ov.transAxes, zorder=4)
@@ -255,6 +250,8 @@ swatch(0.784, TA, "Ta (10 nm, adhesion)")
 swatch(0.722, GR, "monolayer graphene")
 swatch(0.675, OX, r"SiO$_2$ (280 nm)")
 swatch(0.628, SI, "doped Si back gate")
+ov.text(LX, 0.570, r"$L=0.2\ \mu$m,   $W=5.3\ \mu$m",
+        fontsize=FL, va="center", color="0.15", zorder=5)
 
 
 def glyphrow(y, kind, col, label, dy=0.0):
@@ -276,12 +273,52 @@ def glyphrow(y, kind, col, label, dy=0.0):
             zorder=5)
 
 
-glyphrow(0.560, "arrow", C[1], r"supercurrent $I_s(\varphi,T_e)$")
-glyphrow(0.496, "double", C[0],
+glyphrow(0.500, "arrow", C[1], r"supercurrent $I_s(\varphi,T_e)$")
+glyphrow(0.436, "double", C[0],
          "quasiparticle exchange,\n$\\tau_{\\rm A}$", dy=-0.012)
-glyphrow(0.412, "wavy", C[4], "microwave photon, $h\\nu$")
-glyphrow(0.348, "arrow", C[2],
+glyphrow(0.352, "wavy", C[4], "microwave photon, $h\\nu$")
+glyphrow(0.288, "arrow", C[2],
          "e-ph cooling,\n$\\Sigma A\\,(T_e^3-T_p^3)$", dy=-0.012)
+
+# ---- Andreev-doublet energy inset (bottom left) -----------------------
+ibox = FancyBboxPatch((0.030, 0.045), 0.295, 0.225,
+                      boxstyle="round,pad=0.008,rounding_size=0.012",
+                      fc="white", ec="0.80", lw=0.6,
+                      transform=ov.transAxes, zorder=4)
+ov.add_patch(ibox)
+ov.text(0.190, 0.252, "Andreev doublet (per channel)", fontsize=5.2,
+        ha="center", va="center", color="0.15", zorder=5)
+bx0, bx1 = 0.078, 0.215
+Etop, Ebot, Ec = 0.205, 0.145, 0.175
+ov.add_patch(Rectangle((bx0, Etop), bx1 - bx0, 0.030, fc="0.88",
+                       ec="none", transform=ov.transAxes, zorder=5))
+ov.add_patch(Rectangle((bx0, Ebot - 0.030), bx1 - bx0, 0.030,
+                       fc="0.88", ec="none", transform=ov.transAxes,
+                       zorder=5))
+ov.text(0.5 * (bx0 + bx1), Etop + 0.015, "continuum", fontsize=4.8,
+        ha="center", va="center", color="0.40", zorder=6)
+ov.text(0.5 * (bx0 + bx1), Ebot - 0.015, "continuum", fontsize=4.8,
+        ha="center", va="center", color="0.40", zorder=6)
+for yy in (Etop, Ebot):
+    ov.plot([bx0, bx1], [yy, yy], color="0.35", lw=0.6, ls=(0, (3, 2)),
+            zorder=6)
+for sgn in (+1, -1):
+    ov.plot([bx0 + 0.010, bx1 - 0.010],
+            [Ec + sgn * 0.019] * 2, color=C[0], lw=1.4, zorder=6)
+ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=5.2, va="center",
+        zorder=5)
+ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=5.2, va="center",
+        color=C[0], zorder=5)
+ov.text(0.223, Ebot, r"$-\Delta^*$", fontsize=5.2, va="center",
+        zorder=5)
+ov.annotate("", xy=(0.066, 0.230), xytext=(0.066, 0.120), zorder=5,
+            arrowprops=dict(arrowstyle="-|>", lw=0.6, color="0.30",
+                            mutation_scale=5))
+ov.text(0.057, 0.220, "$E$", fontsize=5.2, ha="right", va="center",
+        zorder=5)
+ov.text(0.178, 0.072,
+        r"$E_m=\pm\Delta^*\sqrt{1-\tau\sin^2(\varphi/2)}$",
+        fontsize=5.3, ha="center", va="center", zorder=5)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig_device.pdf"))
