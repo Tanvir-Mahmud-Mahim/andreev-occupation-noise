@@ -112,6 +112,76 @@ for sd in (0.05, 0.1, 0.2):
           f"deficit(I,phi=2)={np.sqrt(achieved2):.4f}")
 res["tau_inhomogeneity"] = inh
 
+# ---- 5b. fully diffusive (Dorokhov) transparency distribution --------
+# tau = sech^2(x), x uniform in [0, X]: the Dorokhov distribution of a
+# diffusive conductor. X chosen so <tau> matches the measured Ta/Ti/Au
+# transparency 0.30. The bound itself is distribution independent; only
+# the saturation deficit changes.
+from scipy.optimize import brentq as _brentq
+X = _brentq(lambda x: np.tanh(x) / x - 0.30, 1e-3, 50.0)
+xs = np.linspace(0.0, X, 200001)[1:]
+taus_d = 1.0 / np.cosh(xs) ** 2
+m1, m2 = taus_d.mean(), (taus_d ** 2).mean()
+dor = {}
+dor["X"] = float(X)
+dor["mean_tau"] = float(m1)
+dor["deficit_L"] = float(np.sqrt(m2 / m1 ** 2))
+D0, Td = RECIPES[0].Delta, 0.1
+phi = 2.0
+E_d = D0 * np.sqrt(1 - taus_d * np.sin(phi / 2) ** 2)
+g_d = D0 ** 2 * taus_d * np.sin(phi) / (4 * E_d)
+v_d = 1.0 / (2 * np.cosh(E_d / (2 * KB * Td)) ** 2)
+ach2 = np.sum(g_d ** 2 * v_d) * np.sum(v_d * E_d ** 2) /     np.sum(g_d * v_d * E_d) ** 2
+dor["deficit_I_phi2"] = float(np.sqrt(ach2))
+res["dorokhov"] = dor
+print(f"Dorokhov (X={X:.2f}, <tau>=0.30): deficit(L)="
+      f"{dor['deficit_L']:.3f}, deficit(I,phi=2)="
+      f"{dor['deficit_I_phi2']:.3f}")
+
+# ---- 5c. time to measure tau_A from the spectral knee ----------------
+# OU process (the occupation noise) plus white readout floor at the
+# Ta/Ti/Au plateau-to-floor amplitude ratio; Welch periodogram, 3-para
+# fit (plateau, knee, floor); fractional error on tau_A versus record
+# length in units of tau_A.
+from scipy.signal import lfilter, welch
+from scipy.optimize import curve_fit
+ratio_amp = 198.0 / 26.0                # sqrt(S) plateau / floor
+rngk = np.random.default_rng(9)
+tauA_u = 1.0                            # work in units of tau_A
+dt = tauA_u / 20.0
+a1 = np.exp(-dt / tauA_u)
+sig_ou = 1.0
+S_ou0 = 4 * sig_ou ** 2 * tauA_u        # S(0) of the OU line
+S_fl = S_ou0 / ratio_amp ** 2
+sig_w = np.sqrt(S_fl / (2 * dt))
+
+
+def lor(f, A, tau, C):
+    return A / (1 + (2 * np.pi * f * tau) ** 2) + C
+
+
+knee = {}
+for n_tau in (300, 1000, 3000, 10000):
+    n = int(n_tau / dt)
+    errs = []
+    for _ in range(40):
+        xi = rngk.standard_normal(n)
+        y = lfilter([sig_ou * np.sqrt(1 - a1 ** 2)], [1, -a1], xi)
+        y = y + sig_w * rngk.standard_normal(n)
+        f_w, S_w = welch(y, fs=1 / dt, nperseg=min(n, 4096))
+        f_w, S_w = f_w[1:], S_w[1:]
+        try:
+            popt, _ = curve_fit(lor, f_w, S_w,
+                                p0=(S_ou0, 0.5 * tauA_u, S_fl),
+                                maxfev=20000)
+            errs.append(abs(popt[1] - tauA_u) / tauA_u)
+        except Exception:
+            errs.append(1.0)
+    knee[str(n_tau)] = float(np.median(errs))
+    print(f"record {n_tau:6d} tau_A: median |dtau/tau| = "
+          f"{np.median(errs):.3f}")
+res["knee_measurement"] = knee
+
 # ---- 6. calibration-scale independence -------------------------------
 sb1 = SensorBudget(RECIPES[0])
 sj_cal = sb1.sj

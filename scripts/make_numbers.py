@@ -99,6 +99,10 @@ N["noneqHundred"] = round(pen(f100, 1e-4), 1)
 N["noneqFifty"] = int(round(pen(f50, 1e-4)))
 N["tauSpreadPct"] = round(100 * (LM["tau_inhomogeneity"]["0.1"]
                                  ["deficit_L"] - 1), 1)
+N["dorokhovL"] = round(LM["dorokhov"]["deficit_L"], 2)
+N["dorokhovI"] = round(LM["dorokhov"]["deficit_I_phi2"], 2)
+N["kneeRecs"] = int(min(int(k) for k, v in
+                        LM["knee_measurement"].items() if v <= 0.10))
 
 # nonlinear click Monte Carlo (nonlinear_click.json)
 K = NL["T0.05_W5.3_L0.5"]
@@ -152,6 +156,8 @@ MACROS = {
     "NoneqHundred": N["noneqHundred"],
     "NoneqFifty": N["noneqFifty"],
     "TauSpreadPct": N["tauSpreadPct"],
+    "DorokhovL": N["dorokhovL"],
+    "DorokhovI": N["dorokhovI"],
     "NlCe": N["nlCe"],
     "NlTc": N["nlTc"],
     "NlTpeak": N["nlTpeak"],
