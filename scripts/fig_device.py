@@ -34,7 +34,7 @@ YC = (1.0, 6.0)                           # contact y-extent
 ZG = 0.07                                 # graphene (exaggerated)
 ZTA, ZTI, ZAU = 0.22, 0.80, 0.92          # cumulative layer tops
 
-verts, cols = [], []
+verts, cols, edges = [], [], []
 
 
 def shade(c, f):
@@ -42,8 +42,9 @@ def shade(c, f):
     return (min(r * f, 1), min(g * f, 1), min(b * f, 1))
 
 
-def quad(p0, p1, p2c, p3, c):
+def quad(p0, p1, p2c, p3, c, ec="0.35"):
     verts.append([p0, p1, p2c, p3]); cols.append(c)
+    edges.append(c if ec is None else ec)
 
 
 def top(xr, yr, z, c):
@@ -96,7 +97,14 @@ for xr in (XL, XR):
         front(xr, YC[0], (z0, z1), c)
         right(xr[1], YC, (z0, z1), c)
         left(xr[0], YC, (z0, z1), c)
-    top(xr, YC, ZAU, AU)
+    nstrip = 10
+    for i in range(nstrip):
+        xs0 = xr[0] + (xr[1] - xr[0]) * i / nstrip
+        xs1 = xr[0] + (xr[1] - xr[0]) * (i + 1) / nstrip
+        fshade = 1.06 - 0.17 * i / (nstrip - 1)
+        quad((xs0, YC[0], ZAU), (xs1, YC[0], ZAU),
+             (xs1, YC[1], ZAU), (xs0, YC[1], ZAU),
+             shade(AU, fshade), ec=None)
 
 fig = plt.figure(figsize=(SGL, 2.95))
 under = fig.add_axes([0, 0, 1, 1]); under.axis("off")
@@ -106,9 +114,14 @@ ax.set_axis_off()
 ax.view_init(elev=18, azim=-70)
 ax.set_proj_type("ortho")
 ax.set_box_aspect((10, 7, 3.6), zoom=1.00)
-pc = Poly3DCollection(verts, facecolors=cols, edgecolors="0.35",
+pc = Poly3DCollection(verts, facecolors=cols, edgecolors=edges,
                       linewidths=0.3, zsort="average")
 ax.add_collection3d(pc)
+for xr in (XL, XR):                       # gold-top outlines
+    bx = [xr[0], xr[1], xr[1], xr[0], xr[0]]
+    by = [YC[0], YC[0], YC[1], YC[1], YC[0]]
+    ax.plot(bx, by, [ZAU + 0.004] * 5, color="0.35", lw=0.3,
+            zorder=49)
 
 # honeycomb lattice hint on the exposed channel (view-culled)
 a = 0.16
@@ -220,8 +233,6 @@ ov.text(rx + 0.115, ry,
         "readout resonator,\n$\\nu_r=6$ GHz, $L_r=2$ nH",
         fontsize=FS, ha="left", va="center")
 
-ov.text(0.990, 0.212, "not to scale", fontsize=4.8,
-        color="0.45", ha="right")
 
 # ---- key (legend-style labeling, no leader lines) ---------------------
 from matplotlib.patches import FancyBboxPatch, Rectangle
@@ -250,8 +261,9 @@ swatch(0.784, TA, "Ta (10 nm, adhesion)")
 swatch(0.722, GR, "monolayer graphene")
 swatch(0.675, OX, r"SiO$_2$ (280 nm)")
 swatch(0.628, SI, "doped Si back gate")
-ov.text(LX, 0.570, r"$L=0.2\ \mu$m,   $W=5.3\ \mu$m",
-        fontsize=FL, va="center", color="0.15", zorder=5)
+ov.text(LX, 0.570,
+        r"$\tau=0.30$,  $L=0.2\ \mu$m,  $W=5.3\ \mu$m",
+        fontsize=5.4, va="center", color="0.15", zorder=5)
 
 
 def glyphrow(y, kind, col, label, dy=0.0):
@@ -305,6 +317,13 @@ for yy in (Etop, Ebot):
 for sgn in (+1, -1):
     ov.plot([bx0 + 0.010, bx1 - 0.010],
             [Ec + sgn * 0.019] * 2, color=C[0], lw=1.4, zorder=6)
+for dx in (-0.012, 0.012):
+    ov.add_patch(plt.Circle((0.5 * (bx0 + bx1) + dx, Ec - 0.019),
+                            0.0042, fc=C[0], ec=C[0], lw=0.5,
+                            transform=ov.transAxes, zorder=7))
+    ov.add_patch(plt.Circle((0.5 * (bx0 + bx1) + dx, Ec + 0.019),
+                            0.0042, fc="white", ec=C[0], lw=0.5,
+                            transform=ov.transAxes, zorder=7))
 ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=5.2, va="center",
         zorder=5)
 ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=5.2, va="center",
