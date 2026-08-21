@@ -73,10 +73,36 @@ def test_mc_pair_spectrum():
     assert err < 0.25
 
 
+def test_bound_random_ensembles():
+    """The Cauchy-Schwarz bound dT^2 >= 2 kB T^2 tauA / (C_A t) holds
+    for arbitrary couplings over random level sets, with exact equality
+    at g proportional to E (spin factor included)."""
+    from constants import KB
+    rng = np.random.default_rng(3)
+    for _ in range(20):
+        M = int(rng.integers(2, 60))
+        T = float(rng.uniform(0.03, 0.4))
+        E = rng.uniform(0.2, 6.0, M) * KB * T
+        g = rng.uniform(-2, 2, M)
+        tauA, t = 1e-6, 1.0
+        f = 1.0 / (np.exp(E / (KB * T)) + 1.0)
+        v = f * (1 - f)
+        R = np.sum(g * (-2 * E * v / (KB * T ** 2)))
+        dT2 = np.sum(g ** 2 * 8 * v * tauA) / (2 * t * R ** 2)
+        CA = np.sum(2 * v * E ** 2) / (KB * T ** 2)
+        bound = 2 * KB * T ** 2 * tauA / (CA * t)
+        assert dT2 >= bound * (1 - 1e-12)
+        Ro = np.sum(E * (-2 * E * v / (KB * T ** 2)))
+        dT2o = np.sum(E ** 2 * 8 * v * tauA) / (2 * t * Ro ** 2)
+        assert abs(dT2o / bound - 1) < 1e-12
+    print("random-ensemble bound: inequality and g~E equality exact")
+
+
 if __name__ == "__main__":
     test_singles_limit()
     test_equilibrium_invariance()
     test_pairs_only_shorten()
     test_generator_conservation()
     test_mc_pair_spectrum()
+    test_bound_random_ensembles()
     print("ALL GENERAL-NOISE TESTS PASSED")

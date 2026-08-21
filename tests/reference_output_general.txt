@@ -3,4 +3,5 @@ equilibrium variance invariant under pair processes
 tau_eff vs Gp: [1.0, 0.9335, 0.83, 0.694, 0.575]
 generator conserves probability; Gibbs state stationary
 pair-process MC: S0=15.960 vs analytic 15.590 (2.4%)
+random-ensemble bound: inequality and g~E equality exact
 ALL GENERAL-NOISE TESTS PASSED
