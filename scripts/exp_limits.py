@@ -182,6 +182,92 @@ for n_tau in (300, 1000, 3000, 10000):
           f"{np.median(errs):.3f}")
 res["knee_measurement"] = knee
 
+# ---- 5d. multi-level worst case: activated tau(E) over a Dorokhov ----
+# ensemble at phi = 2 (current readout). Each level m contributes an
+# independent Lorentzian with weight w_m = g_m^2 f_m(1-f_m) and knee
+# tau_m = tau0 exp((Delta-E_m)/kBT), so the composite spectrum has its
+# knee smeared over tau_max/tau_min ~ e^(Delta-E_min... spread. The
+# quantity that sets the measured floor is the zero-frequency plateau
+# S(0) = sum 4 w_m tau_m; the effective time is
+# tau_eff = S(0) / (4 sum w_m). Test: synthesize Gaussian records with
+# the exact composite spectrum plus the same white floor as 5c, fit the
+# single-Lorentzian model, and measure the recovered plateau and knee.
+f_th = 1.0 / (np.exp(E_d / (KB * Td)) + 1.0)
+w_d = g_d ** 2 * f_th * (1.0 - f_th)
+tau_m = np.exp((D0 - E_d) / (KB * Td))       # units of tau0
+tau_eff = float(np.sum(w_d * tau_m) / np.sum(w_d))
+S0_true = float(np.sum(4.0 * w_d * tau_m))
+spread = float(tau_m.max() / tau_m.min())
+# bin the ensemble into log-spaced tau bins for a fast dense spectrum
+nb = 300
+edges = np.logspace(np.log10(tau_m.min()), np.log10(tau_m.max()) + 1e-9,
+                    nb + 1)
+idx = np.clip(np.digitize(tau_m, edges) - 1, 0, nb - 1)
+wb = np.bincount(idx, weights=w_d, minlength=nb)
+wtb = np.bincount(idx, weights=w_d * tau_m, minlength=nb)
+keep = wb > 0
+tb = wtb[keep] / wb[keep]
+wbk = wb[keep]
+
+dtm = 0.1                                     # tau0 units
+S_flm = S0_true / ratio_amp ** 2
+rngm = np.random.default_rng(11)
+ml = dict(tau_eff_tau0=tau_eff, spread=spread)
+for n_tau_m in (1000, 3000, 10000):
+    n_m = int(n_tau_m * tau_eff / dtm)
+    fr = np.fft.rfftfreq(n_m, dtm)
+    S_line = np.zeros_like(fr)
+    for wi, ti in zip(wbk, tb):
+        S_line += 4.0 * wi * ti / (1.0 + (2 * np.pi * fr * ti) ** 2)
+    S_tot = S_line + S_flm
+    errs_tau, errs_S0 = [], []
+    for _ in range(30):
+        z = (rngm.standard_normal(fr.size) +
+             1j * rngm.standard_normal(fr.size)) / np.sqrt(2.0)
+        z[0] = rngm.standard_normal()
+        if n_m % 2 == 0:
+            z[-1] = rngm.standard_normal()
+        y = np.fft.irfft(z * np.sqrt(S_tot * n_m / (2 * dtm)), n=n_m)
+        f_w, S_w = welch(y, fs=1 / dtm, nperseg=16384)
+        f_w, S_w = f_w[1:], S_w[1:]
+        popt, _ = curve_fit(lor, f_w, S_w,
+                            p0=(S0_true, 0.5 * tau_eff, S_flm),
+                            maxfev=40000)
+        errs_S0.append(abs(popt[0] - S0_true) / S0_true)
+        errs_tau.append(abs(popt[1] - tau_eff) / tau_eff)
+    ml[f"err_plateau_{n_tau_m}"] = float(np.median(errs_S0))
+    ml[f"err_tau_{n_tau_m}"] = float(np.median(errs_tau))
+    print(f"multi-level Dorokhov knee (spread x{spread:.0f}, "
+          f"tau_eff={tau_eff:.1f} tau0), record {n_tau_m} tau_eff: "
+          f"median |dS0/S0|={np.median(errs_S0):.3f}, "
+          f"median |dtau/tau_eff|={np.median(errs_tau):.3f}")
+res["knee_multilevel"] = ml
+
+# ---- 5e. knee calibration with a degraded readout floor --------------
+degr = {}
+for ra in (ratio_amp, 3.0, 1.5):
+    for n_tau in (1000, 10000):
+        S_fl_d = S_ou0 / ra ** 2
+        sig_w_d = np.sqrt(S_fl_d / (2 * dt))
+        errs = []
+        for _ in range(20):
+            xi = rngk.standard_normal(int(n_tau / dt))
+            y = lfilter([sig_ou * np.sqrt(1 - a1 ** 2)], [1, -a1], xi)
+            y = y + sig_w_d * rngk.standard_normal(y.size)
+            f_w, S_w = welch(y, fs=1 / dt, nperseg=min(y.size, 4096))
+            f_w, S_w = f_w[1:], S_w[1:]
+            try:
+                popt, _ = curve_fit(lor, f_w, S_w,
+                                    p0=(S_ou0, 0.5, S_fl_d),
+                                    maxfev=20000)
+                errs.append(abs(popt[1] - 1.0))
+            except Exception:
+                errs.append(1.0)
+        degr[f"ratio{ra:.1f}_N{n_tau}"] = float(np.median(errs))
+        print(f"degraded floor ratio {ra:4.1f}, record {n_tau:6d}: "
+              f"median |dtau/tau| = {np.median(errs):.3f}")
+res["knee_degraded"] = degr
+
 # ---- 6. calibration-scale independence -------------------------------
 sb1 = SensorBudget(RECIPES[0])
 sj_cal = sb1.sj

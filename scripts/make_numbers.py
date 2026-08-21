@@ -103,6 +103,11 @@ N["dorokhovL"] = round(LM["dorokhov"]["deficit_L"], 2)
 N["dorokhovI"] = round(LM["dorokhov"]["deficit_I_phi2"], 2)
 N["kneeRecs"] = int(min(int(k) for k, v in
                         LM["knee_measurement"].items() if v <= 0.10))
+N["kneeDegradedPct"] = round(100 * LM["knee_degraded"]["ratio1.5_N1000"],
+                             0)
+N["multiKneeSpread"] = int(round(LM["knee_multilevel"]["spread"], -1))
+N["multiFloorPct"] = round(100 * (np.sqrt(
+    1 + LM["knee_multilevel"]["err_plateau_1000"]) - 1), 0)
 
 # nonlinear click Monte Carlo (nonlinear_click.json)
 K = NL["T0.05_W5.3_L0.5"]
@@ -158,6 +163,9 @@ MACROS = {
     "TauSpreadPct": N["tauSpreadPct"],
     "DorokhovL": N["dorokhovL"],
     "DorokhovI": N["dorokhovI"],
+    "KneeDegradedPct": int(N["kneeDegradedPct"]),
+    "MultiKneeSpread": N["multiKneeSpread"],
+    "MultiFloorPct": int(N["multiFloorPct"]),
     "NlCe": N["nlCe"],
     "NlTc": N["nlTc"],
     "NlTpeak": N["nlTpeak"],
