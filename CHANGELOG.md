@@ -4,6 +4,26 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Fixes (30 September 2026)
+
+- `scripts/make_numbers.py` now writes the LaTeX macros to
+  `data/numbers.tex`, next to `data/numbers.json`. Before, it wrote
+  `paper/numbers.tex`, in a `paper/` folder that is not in the repository
+  and that neither the script nor `run_all.sh` created, so the last step of
+  `run_all.sh` stopped with `FileNotFoundError` unless `mkdir -p paper` had
+  been run first. The content of the file is unchanged (checked: identical
+  byte for byte to the file written by the previous version from the same
+  data).
+- `.gitignore`: removed the six `paper/...` patterns; added
+  `data/numbers.tex`, so the generated macro file is not committed.
+- `requirements.txt`: `numpy>=1.24` changed to `numpy>=2.0`, because the
+  code calls `numpy.trapezoid`, which exists only from NumPy 2.0. With that,
+  `scipy>=1.10` became `scipy>=1.13` and `matplotlib>=3.7` became
+  `matplotlib>=3.8.4`, the first releases that work with NumPy 2.
+- README: removed the `mkdir -p paper` steps and the warning about the
+  missing `paper/` folder, gave the new file location and minimum versions,
+  and recorded a check with exactly these minimum versions.
+
 ## Documentation (30 September 2026)
 
 Documentation only; no code, data or results changed.

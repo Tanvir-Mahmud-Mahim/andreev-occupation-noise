@@ -1,9 +1,4 @@
 __pycache__/
 *.pyc
 figures/*.png
-paper/*.aux
-paper/*.log
-paper/*.out
-paper/*.bbl
-paper/*.blg
-paper/mainpg-*.png
+data/numbers.tex

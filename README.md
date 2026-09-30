@@ -127,8 +127,9 @@ andreev-occupation-noise/
 and `calibration.json` (see [Section 10](#10-notes-on-the-calculations)).
 The other result files (`universal.json`, `design.json`,
 `matched_points.json`, `calorimetry.json`) are not stored; they are made in
-a few seconds (Way B below). Figures go to `figures/`, which is also not
-stored.
+a few seconds (Way B below). `make_numbers.py` also writes the LaTeX macros
+`numbers.tex` into `data/`; it is not stored either (it is listed in
+`.gitignore`). Figures go to `figures/`, which is also not stored.
 
 ---
 
@@ -141,13 +142,25 @@ with **Python 3.11**.
 pip install -r requirements.txt
 ```
 
-This installs `numpy`, `scipy`, and `matplotlib` (with their own
-dependencies). The test here installed numpy 2.4.6, scipy 1.17.1 and
-matplotlib 3.11.2.
+This installs `numpy` (2.0 or newer), `scipy` (1.13 or newer) and
+`matplotlib` (3.8.4 or newer), with their own dependencies. The test here
+installed numpy 2.4.6, scipy 1.17.1 and matplotlib 3.11.2.
 
-**NumPy version.** `requirements.txt` allows `numpy>=1.24`, but the code
-calls `numpy.trapezoid`, which exists only in NumPy 2.0 and newer (NumPy
-1.26.4 has only the older `numpy.trapz`). Use NumPy 2.0 or newer.
+**Why these minimum versions.** The code calls `numpy.trapezoid`, which
+exists only in NumPy 2.0 and newer (NumPy 1.26.4 has only the older
+`numpy.trapz`). SciPy 1.13 and Matplotlib 3.8.4 are the first releases
+that work with NumPy 2. Older SciPy releases and Matplotlib 3.7.3 to 3.8.3
+declare `numpy<2` or a similar limit; Matplotlib 3.7.0 to 3.7.2 declare
+none but fail to import with NumPy 2.
+
+**Checked with the minimum versions.** On 30 September 2026 the code was
+also run with exactly numpy 2.0.0, scipy 1.13.0 and matplotlib 3.8.4
+(Python 3.11): the three test files printed exactly their reference output,
+`bash run_all.sh` ran through to `ALL DONE`, and `bcs_gap_table.npz`,
+`nonlinear_click.json`, both click-trace files and `numbers.json` came out
+identical to the stored files. `limits.json` differed in 18 of its numbers
+(fitted quantities of the knee checks) by at most 7.2e-8 relative, which
+does not change any rounded value in `numbers.json`.
 
 ---
 
@@ -175,7 +188,7 @@ and the gap table are already stored in `data/`, so only the fast steps are
 needed:
 
 ```
-mkdir -p data figures paper
+mkdir -p data figures
 python scripts/exp_universal.py
 python scripts/exp_design.py
 python scripts/exp_matched_points.py
@@ -191,15 +204,13 @@ python scripts/make_numbers.py
 ```
 
 The figures appear in `figures/` as PDF files. The figure scripts do not
-create `figures/` themselves, so the `mkdir` line is needed. `paper/` is
-needed by `make_numbers.py` (see Way C). In the test here, this sequence
+create `figures/` themselves, so the `mkdir` line is needed. In the test here, this sequence
 took 23 seconds from a fresh copy, and `data/numbers.json` came out
 identical to the stored file.
 
 ### Way C: recompute everything from scratch (about 10 minutes)
 
 ```
-mkdir -p paper
 bash run_all.sh
 ```
 
@@ -208,12 +219,6 @@ calculation scripts, the seven figure scripts and `make_numbers.py`, in
 that order. The earlier README gives the total time as "some tens of
 minutes on a laptop". Here the whole run took about 9.5 minutes, most of it
 in `exp_limits.py` (8 minutes).
-
-**Important:** `make_numbers.py` also writes `paper/numbers.tex`, but the
-`paper/` folder is not in the repository and neither the script nor
-`run_all.sh` creates it. Without `mkdir -p paper`, the last step stops with
-`FileNotFoundError` (after `data/numbers.json` has already been written)
-and `run_all.sh` does not print `ALL DONE`.
 
 Running Way C overwrites the stored files in `data/`. In the test here,
 every stored file (`bcs_gap_table.npz`, `limits.json`,
@@ -235,7 +240,7 @@ identical to the stored copy.
 | 6 | `python scripts/exp_limits.py` | Checks of the approximations (the earlier README links this to Sec. VII of the manuscript's supplementary material): pair processes, part of the current above the gap for each recipe, energy-dependent exchange time, non-thermal filling, spread of transparency (random and diffusive "Dorokhov" distributions), time needed to measure tau_A from the noise spectrum, independence from the current calibration | 8 min | `data/limits.json` |
 | 7 | `python scripts/exp_nonlinear_click.py` | Nonlinear click Monte Carlo (the earlier README links this to Sec. VIII of the supplementary material): single 26 GHz photon deposited in four designs; nonlinear heating and cooling, level filling and resonator shift; 1000 photon and 1000 dark trials per case; matched-filter detection | 44 s | `data/nonlinear_click.json`, `data/click_traces_3e-08.npz`, `data/click_traces_1e-07.npz` |
 | 8 | `python scripts/fig_device.py`, `fig1.py`, `fig2.py`, `fig3.py`, `fig4.py`, `figS1.py`, `figS2.py` | Draw the figures ([Section 6](#6-which-script-makes-which-figure)) | 2 to 6 s each | `figures/*.pdf` |
-| 9 | `python scripts/make_numbers.py` | Collects every number quoted in the manuscript (61 values) and writes 51 LaTeX macros; needs `paper/` to exist | 2 s | `data/numbers.json`, `paper/numbers.tex` |
+| 9 | `python scripts/make_numbers.py` | Collects every number quoted in the manuscript (61 values) and writes 51 LaTeX macros | 2 s | `data/numbers.json`, `data/numbers.tex` |
 
 \*Measured on a shared 2-core Linux machine with Python 3.11 while other
 jobs were running; a free modern computer is usually faster.
@@ -426,15 +431,20 @@ depend on this factor.
   No test in `tests/` checks it. Likewise, `gap_bcs` says it is "validated
   against both asymptotes in the testbench", but no test calls `gap_bcs`
   directly (only the check value printed by `make_bcs_table.py` exists).
-- **Outside the repository.** `make_numbers.py` writes LaTeX macros for
-  `paper/numbers.tex`; the manuscript source itself is not included.
+- **LaTeX macros.** `make_numbers.py` writes the macros to
+  `data/numbers.tex`, next to `data/numbers.json`. That file is not stored
+  in the repository (it is listed in `.gitignore`); the manuscript source
+  itself is not included.
 
 ---
 
 ## 11. Version history
 
 The repository has no releases or version tags. All code was added on
-21 August 2026 (git history). Details are in [CHANGELOG.md](CHANGELOG.md).
+21 August 2026 (git history). On 30 September 2026 `make_numbers.py` was
+changed to write `data/numbers.tex` instead of `paper/numbers.tex`, and
+`requirements.txt` was corrected to NumPy 2.0 or newer. Details are in
+[CHANGELOG.md](CHANGELOG.md).
 
 ---
 
