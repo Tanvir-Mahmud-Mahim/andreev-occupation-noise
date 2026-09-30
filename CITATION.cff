@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the manuscript below."
+title: "andreev-occupation-noise: simulation code for Andreev occupation noise in proximity Josephson thermal detectors"
+authors:
+  - family-names: Mahim
+    given-names: Tanvir M.
+    affiliation: BRAC University
+    email: tanvir.mahim@bracu.ac.bd
+  - family-names: Mohsin
+    given-names: A. S. M.
+  - family-names: Rahman
+    given-names: M. M.
+license: Apache-2.0
+repository-code: "https://github.com/Tanvir-Mahmud-Mahim/andreev-occupation-noise"
+preferred-citation:
+  type: unpublished
+  title: "Andreev occupation noise sets the sensitivity limit of proximity Josephson thermal detectors"
+  authors:
+    - family-names: Mahim
+      given-names: Tanvir M.
+      affiliation: BRAC University
+    - family-names: Mohsin
+      given-names: A. S. M.
+    - family-names: Rahman
+      given-names: M. M.
