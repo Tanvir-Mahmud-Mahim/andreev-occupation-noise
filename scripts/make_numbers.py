@@ -1,5 +1,5 @@
 """Regenerate every number quoted in the manuscript from the simulation
-outputs, as LaTeX macros (data/numbers.tex) and JSON (data/numbers.json).
+outputs, as LaTeX macros (paper/numbers.tex) and JSON (data/numbers.json).
 """
 import sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -53,6 +53,16 @@ N["tauAstarWorstPs"] = round(worst * 1e3, 1)
 N["SnuTa"] = round(np.sqrt(D["spectra"]["Ta/Ti/Au"]["Snu"][0]), 0)
 N["SnuFloor"] = round(np.sqrt(D["Snu_floor"]), 0)
 N["SnuKneekHz"] = round(1.0 / (2 * np.pi * 1e-6) / 1e3, 0)
+# exchange time at which the Lorentzian plateau (computed at tauA = 1 us,
+# plateau ~ tauA) falls to the quantum-limited readout floor
+N["tauVisNs"] = round(1e3 * D["Snu_floor"] /
+                      D["spectra"]["Ta/Ti/Au"]["Snu"][0], 0)
+# crossover exchange time of the second-lowest-gap recipe at 100 mK
+N["tauAstarTiAlAuNs"] = round([b for b in D["budgets"]
+                               if b["label"] == "Ti/Al/Au"
+                               and abs(b["T"] - 0.1) < 1e-6][0]
+                              ["tauA_star_ns"], 2)
+N["occSharePct"] = None   # filled below from gapChanCorr
 
 # finite-L deficits
 defs = {}
@@ -62,7 +72,8 @@ for r in RECIPES:
 N["deficitShortMaxPct"] = round(100 * (max(v for k, v in defs.items()
                                 if k != "MoRe") - 1), 1)
 N["deficitMoRePct"] = round(100 * (defs["MoRe"] - 1), 0)
-N["LxiMoRe"] = 0.43
+mr = [r for r in RECIPES if r.label == "MoRe"][0]
+N["LxiMoRe"] = round(mr.L / mr.xi, 2)       # L and xi as tabulated by Jung et al.
 
 # matched design points
 N["sigEmatched100"] = round(MP["T0.1_tauA1e-06"]["sigE_GHz"], 1)
@@ -80,6 +91,7 @@ s = sb.sj.andreev_sums(1e-4, 0.1, "L")
 Rtot = (sb.sj.dIdphi0(0.1 + 1e-5) - sb.sj.dIdphi0(0.1 - 1e-5)) / 2e-5
 N["gapChanCorr"] = round(Rtot / s["R_occ"], 2)
 N["anchorRatio"] = round(Cal["anchor_ratio"], 2)
+N["occSharePct"] = int(round(100.0 / (Rtot / s["R_occ"]), 0))
 
 # phase-bias route: best sigma_E for tau=0.99 at 100 mK
 pb = D["phi_scan"]["0.99"]
@@ -119,12 +131,14 @@ N["nlSNR30"] = round(K["snr_mc_T_3e-08"], 1)
 N["nlEff30"] = round(K["eff_T_3e-08"], 3)
 N["nlSNR100"] = round(K["snr_mc_T_1e-07"], 1)
 N["nlEff100"] = round(K["eff_T_1e-07"], 3)
+N["nlDark100"] = int(round(1000 * K["darkfrac_T_1e-07"]))       # of 1000
+N["nlShiftMHz"] = int(round(abs(K["peak_dnu_T_3e-08_kHz"]) / 1e3))
 N["nlSNRmus"] = round(K["snr_mc_T_1e-06"], 1)
 N["nlSNRC30"] = round(K["snr_mc_C_3e-08"], 1)
 N["nlSNR100mK"] = round(NL["T0.1_W5.3_L0.5"]["snr_mc_T_3e-08"], 1)
 Ksm = NL["T0.05_W1.0_L0.1"]
 N["nlSNRsmall"] = round(Ksm["snr_mc_T_3e-08"], 1)
-N["nlCeSmall"] = round(Ksm["Ce_kB"], 1)
+N["nlCeSmall"] = round(Ksm["Ce_kB"], 2)
 N["nlSigTsmall"] = round(Ksm["sigT_over_T"], 2)
 N["nlTpkSmall"] = round(Ksm["T_peak"], 2)
 
@@ -166,6 +180,9 @@ MACROS = {
     "KneeDegradedPct": int(N["kneeDegradedPct"]),
     "MultiKneeSpread": N["multiKneeSpread"],
     "MultiFloorPct": int(N["multiFloorPct"]),
+    "TauVisNs": int(N["tauVisNs"]),
+    "TauAstarTiAlAu": N["tauAstarTiAlAuNs"],
+    "OccSharePct": N["occSharePct"],
     "NlCe": N["nlCe"],
     "NlTc": N["nlTc"],
     "NlTpeak": N["nlTpeak"],
@@ -175,6 +192,8 @@ MACROS = {
     "NlSNRhundred": N["nlSNR100"],
     "NlEffHundred": f"{N['nlEff100']:.3f}",
     "NlSNRmus": N["nlSNRmus"],
+    "NlDarkHundred": N["nlDark100"],
+    "NlShiftMHz": N["nlShiftMHz"],
     "NlSNRscenC": N["nlSNRC30"],
     "NlSNRhundredmK": N["nlSNR100mK"],
     "NlSNRsmall": N["nlSNRsmall"],
@@ -184,7 +203,8 @@ MACROS = {
 }
 j = json.dumps(N, indent=1)
 open(os.path.join(base, "numbers.json"), "w").write(j)
-with open(os.path.join(base, "numbers.tex"), "w") as f:
+with open(os.path.join(os.path.dirname(__file__), "..", "paper",
+                       "numbers.tex"), "w") as f:
     for k, v in MACROS.items():
         f.write(f"\\newcommand{{\\n{k}}}{{{v}}}\n")
 print(j)

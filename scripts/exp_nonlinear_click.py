@@ -11,13 +11,17 @@ main text:
     or thermally activated, tau(Te) = tau_A exp[-(Delta*/kB)(1/T0 -
     1/Te)], floored at 1 ns (scenario T); the electrodes stay cold so
     Delta* is fixed;
-  * the resonator frequency follows the exact series-LC relation with
-    LJ = (hbar/2e)/I'(0), I'(0) proportional to m;
+  * the resonator frequency follows the static series-LC relation with
+    LJ = (hbar/2e)/I'(0), I'(0) proportional to m (an ideal,
+    instantaneous frequency readout: resonator dynamics, finite
+    linewidth and readout nonlinearity are NOT modeled, so the results
+    are upper estimates; the matched-filter score is evaluated at the
+    known arrival time);
   * noises: occupation telegraph (variance 2f(1-f)/Nch, correlation
     tau_A), phonon TFN entering through the occupation lag, and the
     quantum-limited readout floor; detection uses a matched filter
     built from the mean click template and empirical statistics from
-    400 photon and 400 dark trials per scenario.
+    1000 photon and 1000 dark trials per scenario.
 """
 import sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
