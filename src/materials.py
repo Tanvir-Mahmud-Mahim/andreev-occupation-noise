@@ -77,9 +77,10 @@ def dos_ef(n: float) -> float:
 
 def heat_capacity(Te, n: float, area: float):
     """Electronic heat capacity (J/K). Degenerate 2D Fermi gas,
-    C = (pi^2/3) kB^2 T nu(E_F) A. Validated: reproduces ~6 kB for
-    A = 1 um^2, n = 1.7e16 m^-2, T = 0.1 K (Jung et al.) and the 0.6 ns
-    thermal time of Lee et al. Nature 586, 42 (2020)."""
+    C = (pi^2/3) kB^2 T nu(E_F) A, identical to the gamma T form used by
+    Lee et al. Nature 586, 42 (2020). With Sigma = 2 W m^-2 K^-3 it gives
+    a thermal time of 0.8 ns at 0.19 K and n = 2e16 m^-2, the same order
+    as the 0.6 ns reported by Lee et al."""
     return (np.pi**2 / 3.0) * KB**2 * np.asarray(Te) * dos_ef(n) * area
 
 
@@ -88,7 +89,7 @@ def ep_power(Te, Tp: float, area: float, sigma: float = 2.0,
     """Electron-phonon cooling power (W), P = Sigma A (Te^d - Tp^d).
     Default: resonant-supercollision regime delta = 3 with
     Sigma = 2.0 W m^-2 K^-3 (measured for hBN-encapsulated graphene JJ
-    bolometers, Lee et al. Nature 586, 42 (2020): 2.1-3.3)."""
+    bolometers, Lee et al. Nature 586, 42 (2020): 2.0-3.3)."""
     Te = np.asarray(Te, dtype=float)
     return sigma * area * (Te**delta - Tp**delta)
 
