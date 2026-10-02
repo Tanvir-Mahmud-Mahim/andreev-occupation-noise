@@ -3,4 +3,6 @@ Kulik anchor: max residual = 8.88e-16 rad
 ballistic IcRn anchor: rel err = 3.17e-04
 Ta/Ti/Au: N=469, scale=0.384
 Ti/Al/Au: N=159, scale=0.518
+free-energy continuity at bound-state exit: 4 exits, max residual/jump = 0.0039
+BCS gap asymptotes: low-T 0.0094, Ginzburg-Landau 0.0027
 ALL ABS TESTS PASSED

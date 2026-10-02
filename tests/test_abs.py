@@ -64,9 +64,70 @@ def test_recipe_sanity():
         assert 0.1 < s < 10.0
 
 
+def test_free_energy_continuity_at_exit():
+    """When a bound level leaves the gap as phi varies, the bound-state
+    free energy jumps by about 3 kB T (here Delta/kBT = 3) and the
+    continuum term (scattering phase plus threshold boundary term) must
+    jump by the opposite amount. Checked for several transparencies and
+    lengths on a 4001-point phase grid; the residual must be below 1% of
+    the jump."""
+    from abs_model import continuum_delta, continuum_phase_grid
+    T = Delta / (3.0 * KB)
+    x_D = Delta / (2 * KB * T)
+    l2c = 2 * KB * T * (x_D + np.log1p(np.exp(-2 * x_D)))
+    Efac = continuum_phase_grid(20000)
+    E = Delta * Efac
+    w = np.tanh(E / (2 * KB * T))
+
+    def parts(phi, tau, c):
+        Eb = abs_energies(phi, tau, c, Delta)
+        x = np.abs(Eb) / (2 * KB * T)
+        Fb = -np.sum(2 * KB * T * (x + np.log1p(np.exp(-2 * x))))
+        d = continuum_delta(phi, tau, c, Delta, Efac)
+        Fc = l2c * d[0] / np.pi + np.trapezoid(w * d, E) / np.pi
+        return Fb, Fc
+
+    worst, n_exits = 0.0, 0
+    phis = np.linspace(1e-3, np.pi - 1e-3, 4001)
+    for tau, cD in ((0.5, 1.0), (0.9, 1.0), (0.9, 2.0), (0.9, 4.0)):
+        c = cD / Delta
+        n = [len(abs_energies(p, tau, c, Delta)) for p in phis]
+        for i in range(1, len(n)):
+            if n[i] != n[i - 1]:
+                a, b = parts(phis[i - 1], tau, c), parts(phis[i], tau, c)
+                jump = abs(b[0] - a[0])
+                resid = abs((b[0] + b[1]) - (a[0] + a[1]))
+                worst = max(worst, resid / jump)
+                n_exits += 1
+                break
+    print(f"free-energy continuity at bound-state exit: {n_exits} exits, "
+          f"max residual/jump = {worst:.4f}")
+    assert n_exits >= 4 and worst < 0.01
+
+
+def test_bcs_gap_asymptotes():
+    """Tabulated BCS gap against its two asymptotes: low-T form
+    1 - u = sqrt(2 pi t/A) exp(-A/t) at t = 0.15 (within 1% in 1 - u)
+    and the Ginzburg-Landau form u = 1.74 sqrt(1 - t) at t = 0.995
+    (within 0.5%)."""
+    from abs_model import gap_bcs
+    A = 1.764
+    t = 0.15
+    one_minus_u = 1.0 - gap_bcs(t, 1.0, 1.0)
+    asym = np.sqrt(2 * np.pi * t / A) * np.exp(-A / t)
+    e_low = abs(one_minus_u - asym) / asym
+    t = 0.995
+    e_gl = abs(gap_bcs(t, 1.0, 1.0) - 1.74 * np.sqrt(1 - t)) / \
+        (1.74 * np.sqrt(1 - t))
+    print(f"BCS gap asymptotes: low-T {e_low:.4f}, Ginzburg-Landau {e_gl:.4f}")
+    assert e_low < 0.01 and e_gl < 0.005
+
+
 if __name__ == "__main__":
     test_short_junction_formula()
     test_kulik_levels()
     test_ballistic_IcRn()
     test_recipe_sanity()
+    test_free_energy_continuity_at_exit()
+    test_bcs_gap_asymptotes()
     print("ALL ABS TESTS PASSED")
