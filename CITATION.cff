@@ -14,7 +14,7 @@ license: Apache-2.0
 repository-code: "https://github.com/Tanvir-Mahmud-Mahim/andreev-occupation-noise"
 preferred-citation:
   type: unpublished
-  title: "Andreev occupation noise sets the sensitivity limit of proximity Josephson thermal detectors"
+  title: "Andreev-level occupation noise in graphene Josephson thermal detectors: a sensitivity floor and how to measure it"
   authors:
     - family-names: Mahim
       given-names: Tanvir M.

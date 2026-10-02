@@ -4,6 +4,26 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Revised manuscript (2 October 2026)
+
+- Documentation follows the revised manuscript title, "Andreev-level
+  occupation noise in graphene Josephson thermal detectors: a sensitivity
+  floor and how to measure it". No model, data or result changed.
+- `scripts/make_numbers.py`: `LxiMoRe` is now computed from the tabulated
+  L and coherence length; new derived numbers for the revised text
+  (`tauVisNs`, `tauAstarTiAlAuNs`, `occSharePct`, `nlDark100`,
+  `nlShiftMHz`); `nlCeSmall` is given to two decimals (0.38). 56 macros.
+- `tests/test_abs.py`: two new checks, free-energy continuity when a level
+  leaves the gap (residual 0.4% of the jump) and the BCS gap against its
+  low-temperature and Ginzburg-Landau limits; reference output updated.
+- `src/abs_model.py`, `src/materials.py`, `scripts/exp_nonlinear_click.py`:
+  docstrings corrected (where checks are made; Sigma range 2.0 to 3.3;
+  thermal time 0.8 ns versus the 0.6 ns of Lee et al.; the click Monte
+  Carlo is an idealized readout and runs 1000 trials per case).
+- `data/calibration.json`: `s_full` for Ti/Al(thick) (0.659 -> 0.658) and
+  MoRe (0.501 -> 0.493) set to the recomputed values.
+- README updated accordingly; `CITATION.cff` gives the new title.
+
 ## Fixes (30 September 2026)
 
 - `scripts/make_numbers.py` now writes the LaTeX macros to
