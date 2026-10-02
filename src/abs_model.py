@@ -243,9 +243,11 @@ _BCS_A = 1.7639          # Delta0 / kB Tc (weak-coupling BCS)
 def gap_bcs(T, Tc, Delta0):
     """Delta(T) from the numerically solved weak-coupling BCS gap
     equation (universal u(t), t = T/Tc), with the exact low-T asymptote
-    u = 1 - sqrt(2 pi t / A) exp(-A/t) below t = 0.08. Validated against
-    both asymptotes in the testbench (the widely used tanh interpolation
-    misrepresents dDelta/dT at low T by an order of magnitude)."""
+    u = 1 - sqrt(2 pi t / A) exp(-A/t) below t = 0.08. Checked against
+    both asymptotes in tests/test_abs.py (low-T form within 1% in 1 - u
+    at t = 0.15, Ginzburg-Landau form within 0.3% at t = 0.995). The
+    widely used tanh interpolation misrepresents dDelta/dT at low T by
+    an order of magnitude."""
     global _BCS_SPLINE
     t = np.asarray(T, dtype=float) / Tc
     scalar = (t.ndim == 0)
