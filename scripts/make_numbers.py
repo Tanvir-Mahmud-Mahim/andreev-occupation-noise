@@ -1,5 +1,5 @@
 """Regenerate every number quoted in the manuscript from the simulation
-outputs, as LaTeX macros (paper/numbers.tex) and JSON (data/numbers.json).
+outputs, as LaTeX macros (data/numbers.tex) and JSON (data/numbers.json).
 """
 import sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -203,8 +203,7 @@ MACROS = {
 }
 j = json.dumps(N, indent=1)
 open(os.path.join(base, "numbers.json"), "w").write(j)
-with open(os.path.join(os.path.dirname(__file__), "..", "paper",
-                       "numbers.tex"), "w") as f:
+with open(os.path.join(base, "numbers.tex"), "w") as f:
     for k, v in MACROS.items():
         f.write(f"\\newcommand{{\\n{k}}}{{{v}}}\n")
 print(j)
