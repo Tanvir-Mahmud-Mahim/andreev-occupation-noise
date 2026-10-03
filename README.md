@@ -2,11 +2,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-Code for the manuscript **"Andreev-level occupation noise in graphene
-Josephson thermal detectors: a sensitivity floor and how to measure it"**
-by T. M. Mahim, A. S. M. Mohsin, and M. M. Rahman. (An earlier draft of
-the manuscript was titled "Andreev occupation noise sets the sensitivity
-limit of proximity Josephson thermal detectors".)
+This repository holds the code for our manuscript **"Andreev-level
+occupation noise in graphene Josephson thermal detectors: a sensitivity
+floor and how to measure it"**, which I wrote with A. S. M. Mohsin and
+M. M. Rahman. (An earlier draft of the manuscript was titled "Andreev
+occupation noise sets the sensitivity limit of proximity Josephson thermal
+detectors".)
 
 - Repository: https://github.com/Tanvir-Mahmud-Mahim/andreev-occupation-noise
 - Measured devices that the model is built on: W. Jung *et al.*,
@@ -14,9 +15,9 @@ limit of proximity Josephson thermal detectors".)
   Josephson junctions", Phys. Rev. Applied **26**, 014078 (2026),
   https://doi.org/10.1103/9lsg-mdb8 (preprint: arXiv:2503.06850)
 
-The scripts produce the data files in `data/`, the figures of the
-manuscript, and (according to `make_numbers.py`) every number quoted in
-the manuscript (`data/numbers.json`, see
+The scripts produce the data files in `data/` and the figures of the
+manuscript. According to `make_numbers.py`, they also produce every number
+quoted in the manuscript (`data/numbers.json`, see
 [Section 5](#5-the-scripts-step-by-step)).
 
 ---
@@ -46,17 +47,17 @@ A **proximity Josephson junction** is a short strip of a normal conductor
 make a supercurrent flow through the graphene. Inside the junction, this
 current is carried by discrete energy levels called
 **Andreev bound states**. Each level can be empty or can hold stray
-excitations (quasiparticles); a filled level carries less current. Since
-the chance that a level is filled depends on temperature, the current and
+excitations (quasiparticles). A filled level carries less current. The
+chance that a level is filled depends on temperature. So the current and
 the junction's inductance change with temperature, and the junction works
 as a thermometer and, in principle, as a photon detector.
 
-This project points out that the same filling of the levels also **flips
-randomly** in time, even at a perfectly steady temperature. This random
-"occupation noise" sets a floor on how finely the junction can measure
-temperature. The time over which a level keeps its filling is called the
-**exchange time** `tau_A` in the code; it is not known for these devices,
-so the code treats it as a free parameter and scans it.
+In our manuscript we point out that the same filling of the levels also
+**flips randomly** in time, even at a perfectly steady temperature. This
+random "occupation noise" sets a floor on how finely the junction can
+measure temperature. The time over which a level keeps its filling is
+called the **exchange time** `tau_A` in the code. It is not known for these
+devices, so the code treats it as a free parameter and scans it.
 
 Starting from the measured properties of six graphene junctions (Jung *et
 al.*, above), the code computes:
@@ -128,47 +129,47 @@ andreev-occupation-noise/
 (the outputs of the two slowest steps), `numbers.json` (the quoted numbers)
 and `calibration.json` (see [Section 10](#10-notes-on-the-calculations)).
 The other result files (`universal.json`, `design.json`,
-`matched_points.json`, `calorimetry.json`) are not stored; they are made in
-a few seconds (Way B below). `make_numbers.py` also writes the LaTeX macros
-`numbers.tex` into `data/`; it is not stored either (it is listed in
-`.gitignore`). Figures go to `figures/`, which is also not stored.
+`matched_points.json`, `calorimetry.json`) are not stored. You can make them
+in a few seconds (Way B below). `make_numbers.py` also writes the LaTeX
+macros `numbers.tex` into `data/`. That file is not stored either (it is
+listed in `.gitignore`). Figures go to `figures/`, which is also not stored.
 
 ---
 
 ## 3. Installation
 
-The repository does not state a minimum Python version. It was tested here
-with **Python 3.11**.
+The repository does not state a minimum Python version. I tested it with
+**Python 3.11**.
 
 ```
 pip install -r requirements.txt
 ```
 
 This installs `numpy` (2.0 or newer), `scipy` (1.13 or newer) and
-`matplotlib` (3.8.4 or newer), with their own dependencies. The test here
+`matplotlib` (3.8.4 or newer), with their own dependencies. In my test it
 installed numpy 2.4.6, scipy 1.17.1 and matplotlib 3.11.2.
 
 **Why these minimum versions.** The code calls `numpy.trapezoid`, which
 exists only in NumPy 2.0 and newer (NumPy 1.26.4 has only the older
 `numpy.trapz`). SciPy 1.13 and Matplotlib 3.8.4 are the first releases
 that work with NumPy 2. Older SciPy releases and Matplotlib 3.7.3 to 3.8.3
-declare `numpy<2` or a similar limit; Matplotlib 3.7.0 to 3.7.2 declare
-none but fail to import with NumPy 2.
+declare `numpy<2` or a similar limit. Matplotlib 3.7.0 to 3.7.2 declare no
+limit, but they fail to import with NumPy 2.
 
-**Checked with the minimum versions.** On 30 September 2026 the code was
-also run with exactly numpy 2.0.0, scipy 1.13.0 and matplotlib 3.8.4
-(Python 3.11): the three test files printed exactly their reference output,
-`bash run_all.sh` ran through to `ALL DONE`, and `bcs_gap_table.npz`,
+**Checked with the minimum versions.** On 30 September 2026 I also ran the
+code with exactly numpy 2.0.0, scipy 1.13.0 and matplotlib 3.8.4
+(Python 3.11). The three test files printed exactly their reference output,
+and `bash run_all.sh` ran through to `ALL DONE`. `bcs_gap_table.npz`,
 `nonlinear_click.json`, both click-trace files and `numbers.json` came out
 identical to the stored files. `limits.json` differed in 18 of its numbers
-(fitted quantities of the knee checks) by at most 7.2e-8 relative, which
+(fitted quantities of the knee checks) by at most 7.2e-8 relative. This
 does not change any rounded value in `numbers.json`.
 
 ---
 
 ## 4. Quick start: three ways to use the code
 
-Run all commands from the repository folder. Times below were measured on
+Run all commands from the repository folder. I measured the times below on
 a shared 2-core Linux machine that was also running other jobs.
 
 ### Way A: check that everything works (about 20 seconds)
@@ -181,13 +182,13 @@ python tests/test_general.py
 
 Each file ends with `ALL ... TESTS PASSED`. The printed lines should match
 `tests/reference_output_abs.txt`, `reference_output_noise.txt` and
-`reference_output_general.txt`; in the test here they matched exactly.
+`reference_output_general.txt`. In my test they matched exactly.
 
 ### Way B: make the fast results and all figures (about 25 seconds)
 
 The slow results (`limits.json`, `nonlinear_click.json`, the click traces)
-and the gap table are already stored in `data/`, so only the fast steps are
-needed:
+and the gap table are already stored in `data/`. So you only need the fast
+steps:
 
 ```
 mkdir -p data figures
@@ -206,8 +207,8 @@ python scripts/make_numbers.py
 ```
 
 The figures appear in `figures/` as PDF files. The figure scripts do not
-create `figures/` themselves, so the `mkdir` line is needed. In the test here, this sequence
-took 23 seconds from a fresh copy, and `data/numbers.json` came out
+create `figures/` themselves, so you need the `mkdir` line. In my test, this
+sequence took 23 seconds from a fresh copy, and `data/numbers.json` came out
 identical to the stored file.
 
 ### Way C: recompute everything from scratch (about 10 minutes)
@@ -219,11 +220,11 @@ bash run_all.sh
 `run_all.sh` runs the gap table, the three test files, the seven
 calculation scripts, the seven figure scripts and `make_numbers.py`, in
 that order. The earlier README gives the total time as "some tens of
-minutes on a laptop". Here the whole run took about 9.5 minutes, most of it
-in `exp_limits.py` (8 minutes).
+minutes on a laptop". On my machine, the whole run took about 9.5 minutes, most
+of it in `exp_limits.py` (8 minutes).
 
-Running Way C overwrites the stored files in `data/`. In the test here,
-every stored file (`bcs_gap_table.npz`, `limits.json`,
+Be aware that running Way C overwrites the stored files in `data/`. In my
+test, every stored file (`bcs_gap_table.npz`, `limits.json`,
 `nonlinear_click.json`, both click-trace files and `numbers.json`) came out
 identical to the stored copy.
 
@@ -244,20 +245,21 @@ identical to the stored copy.
 | 8 | `python scripts/fig_device.py`, `fig1.py`, `fig2.py`, `fig3.py`, `fig4.py`, `figS1.py`, `figS2.py` | Draw the figures ([Section 6](#6-which-script-makes-which-figure)) | 2 to 6 s each | `figures/*.pdf` |
 | 9 | `python scripts/make_numbers.py` | Collects every number quoted in the manuscript (66 values) and writes 56 LaTeX macros | 2 s | `data/numbers.json`, `data/numbers.tex` |
 
-\*Measured on a shared 2-core Linux machine with Python 3.11 while other
-jobs were running; a free modern computer is usually faster.
+\*I measured these on a shared 2-core Linux machine with Python 3.11 while
+other jobs were running. A modern computer that is not busy with other jobs
+is usually faster.
 
 Every random number generator uses a fixed seed, so the results repeat
-exactly: the stored data files were reproduced bit for bit in the test
-here.
+exactly. In my test, the stored data files were reproduced bit for bit.
 
-**A few of the results** (from `data/numbers.json`, key names in brackets;
-all depend on the assumed tau_A). Most values in `numbers.json` are computed
-from the result files, but two are typed directly into `make_numbers.py`:
+**A few of the results** are listed below. They come from
+`data/numbers.json` (key names in brackets), and all of them depend on the
+assumed tau_A. Most values in `numbers.json` are computed from the result
+files. Two, however, are typed directly into `make_numbers.py`. These are
 `ystar` (2.40) and `dark50` (the text `3\times10^{-11}`;
 `exp_matched_points.py` prints 2.78e-11 per second for the 50 mK,
-tau_A = 1 microsecond point). `LxiMoRe` (0.43) is computed from the
-tabulated L and coherence length of MoRe since 2 October 2026.
+tau_A = 1 microsecond point). Since 2 October 2026, `LxiMoRe` (0.43) is
+computed from the tabulated L and coherence length of MoRe.
 
 | Result | Value |
 |---|---|
@@ -265,13 +267,13 @@ tabulated L and coherence length of MoRe since 2 October 2026.
 | Design condition for the level energy, used in the scripts as 2.3994 kB T; the stored value [`ystar`] is typed into `make_numbers.py`, not computed. Numerical optimum found by the design scan in `exp_design.py` [`optDkT`] | 2.40 kB T; 2.39 kB T |
 | Energy resolution (as a frequency, sigma_E/h) of the best design with tau_A = 1 microsecond and readout floor, at 100 mK [`sigEmatched100`] and 50 mK [`sigEmatched50`] | 7.9 GHz and 1.53 GHz |
 | Predicted resonator frequency noise at 1 Hz for Ta/Ti/Au at Tc*/6 [`SnuTa`], versus the assumed quantum-limited readout floor [`SnuFloor`] | 198 versus 26 Hz per root hertz |
-| Nonlinear click Monte Carlo, 50 mK, 5.3 x 0.5 micrometre channel, tau_A = 30 ns, activated exchange: signal-to-noise [`nlSNR30`] and detection efficiency [`nlEff30`] | 9.1 and 1.000 |
+| Nonlinear click Monte Carlo, 50 mK, 5.3 x 0.5 micrometer channel, tau_A = 30 ns, activated exchange: signal-to-noise [`nlSNR30`] and detection efficiency [`nlEff30`] | 9.1 and 1.000 |
 
 ---
 
 ## 6. Which script makes which figure
 
-Figure numbers are those written in each script's description.
+The figure numbers are the ones written in each script's description.
 
 | Figure | Content | Data from | Drawn by |
 |---|---|---|---|
@@ -283,7 +285,7 @@ Figure numbers are those written in each script's description.
 | Supplementary Fig. S1 | Monte Carlo check of the telegraph-noise spectrum | computed when drawn | `figS1.py` -> `figures/figS1.pdf` |
 | Supplementary Fig. S2 | Monte Carlo signal-to-noise versus tau_A; raw single-shot records | step 7 | `figS2.py` -> `figures/figS2.pdf` |
 
-`fig1.py` and `fig_device.py` make separate PDF files; according to
+`fig1.py` and `fig_device.py` make separate PDF files. According to
 `fig1.py`, they are combined into one figure in the LaTeX source of the
 manuscript, which is not in this repository.
 
@@ -301,7 +303,7 @@ manuscript, which is not in this repository.
 | `src/sensor_limits.py` | `SensorBudget`: electron heat capacity, thermal conductance and thermal time; occupation and phonon temperature resolution; Josephson inductance and participation in the readout resonator; frequency-noise spectrum; numerical matched-filter and analytic energy resolution |
 | `src/montecarlo.py` | Random two-state (telegraph) occupation traces and a one-sided spectrum estimate |
 | `src/noise_general.py` | Four-state model of one level (both spins) with single and pair processes (exact spectrum); activated exchange time tau(E) = tau0 exp[(Delta - E)/kB T]; penalty for a non-thermal filling q |
-| `scripts/figstyle.py` | Shared APS-style figure settings (STIX fonts, Okabe-Ito colour-blind-safe colours, single- and double-column widths) |
+| `scripts/figstyle.py` | Shared APS-style figure settings (STIX fonts, Okabe-Ito color-blind-safe colors, single- and double-column widths) |
 
 ---
 
@@ -309,7 +311,8 @@ manuscript, which is not in this repository.
 
 **Measured junction recipes.** `src/materials.py` takes these from Table I
 of Jung *et al.* (cited in the code as arXiv:2503.06850, published as Phys.
-Rev. Applied 26, 014078 (2026)). Contact stacks with film thicknesses in nm:
+Rev. Applied 26, 014078 (2026)). The contact stacks are given with film
+thicknesses in nm:
 
 | Recipe (label) | Tc* (K) | Coherence length (um) | L (um) | W (um) | Back gate (V) | Transparency | Ic at 20 mK (uA) | Rn (ohm) |
 |---|---|---|---|---|---|---|---|---|
@@ -322,9 +325,10 @@ Rev. Applied 26, 014078 (2026)). Contact stacks with film thicknesses in nm:
 
 **Derived values.** The induced gap is Delta* = 1.764 kB Tc*. Carrier
 density comes from a parallel-plate model of the 280 nm SiO2 gate
-(relative permittivity 3.9) with a charge-neutrality offset of -2 V,
-"chosen so that Vbg = 20 V gives n ~ 1.7e16 m^-2 as quoted by Jung et al."
-(comment in `materials.py`). The number of orbital transverse modes is
+(relative permittivity 3.9) with a charge-neutrality offset of -2 V. A
+comment in `materials.py` says this offset was "chosen so that Vbg = 20 V
+gives n ~ 1.7e16 m^-2 as quoted by Jung et al." The number of orbital
+transverse modes is
 kF W / pi (`n_modes`). `ShortJunction` counts two channels per orbital mode
 (valley x orbital, spin-degenerate): Nch = 2 kF W / pi. `JunctionModel`
 counts orbital modes and puts the valley factor 2 into the current instead.
@@ -335,16 +339,17 @@ This is why `calibration.json` lists 938 channels for Ta/Ti/Au while
 with Sigma = 2.0 W m^-2 K^-3. The code comment cites Lee *et al.*, Nature
 586, 42 (2020) (https://doi.org/10.1038/s41586-020-2752-4), with measured
 values 2.0 to 3.3 (2.04 to 3.30 W m^-2 K^-3 in that paper). With
-Sigma = 2.0 the code gives a thermal time of 0.8 ns at 0.19 K and
-n = 2e16 m^-2, the same order as the 0.6 ns reported by Lee *et al.*
+Sigma = 2.0, the code gives a thermal time of 0.8 ns at 0.19 K and
+n = 2e16 m^-2. This is the same order as the 0.6 ns reported by Lee *et al.*
 
 **One calibration per recipe.** The computed current is multiplied by one
-overall factor so that the critical current at 20 mK equals the measured
+overall factor, so that the critical current at 20 mK equals the measured
 value (`calibrate()` in `abs_model.py` and `short_junction.py`).
 `exp_limits.py` checks that the bound-saturation ratio and C_A do not
 depend on this factor.
 
-**Assumed values** (not measured for these devices; set in the scripts):
+**Assumed values.** These are not measured for these devices. They are set
+in the scripts:
 
 | Value | Used | Where |
 |---|---|---|
@@ -359,28 +364,30 @@ depend on this factor.
 
 ## 9. Built-in checks
 
-- **`tests/test_abs.py`** checks the level solver against exact results:
-  the short-junction formula (to 1e-12 of the gap), the Kulik levels of a
-  fully transparent long channel (to 1e-10 rad), the ballistic result
-  e Ic Rn = pi Delta (to 5e-3), that the calibration factor of the
-  first two recipes lies between 0.1 and 10, that the free energy stays
-  continuous when a level leaves the gap (the jump of the bound-state part
-  and of the above-gap part cancel to 0.4%), and that the tabulated BCS
-  gap matches its low-temperature and Ginzburg-Landau limits (within 1%
-  and 0.3%).
+- **`tests/test_abs.py`** checks the level solver against exact results.
+  These are the short-junction formula (to 1e-12 of the gap), the Kulik
+  levels of a fully transparent long channel (to 1e-10 rad) and the
+  ballistic result e Ic Rn = pi Delta (to 5e-3). It also checks that the
+  calibration factor of the first two recipes lies between 0.1 and 10. It
+  checks that the free energy stays continuous when a level leaves the gap
+  (the jump of the bound-state part and of the above-gap part cancel to
+  0.4%). Finally, it checks that the tabulated BCS gap matches its
+  low-temperature and Ginzburg-Landau limits (within 1% and 0.3%).
 - **`tests/test_noise.py`** checks that a short junction with one
   transparency reaches the bound exactly (to 1e-9) for current and
-  inductance readout (first three recipes); that the analytic occupation
-  responsivity matches a numerical derivative (to 1e-5); and, with a
-  Monte Carlo of telegraph noise, the zero-frequency noise (within 10%),
-  the half-height point of the spectrum (ratio 0.5 within 0.12), and the
-  rule "variance of a t-second average = S/(2t)" (within 25%).
-- **`tests/test_general.py`** checks the four-state model: the
-  single-process limit, that pair processes do not change the equilibrium
-  variance and only shorten the effective correlation time, conservation of
-  probability, the zero-frequency noise against a four-state Monte Carlo
-  (within 25%), and the bound (with exact equality when the coupling is
-  proportional to the level energy) over 20 random level sets.
+  inductance readout (first three recipes). It checks that the analytic
+  occupation responsivity matches a numerical derivative (to 1e-5). With a
+  Monte Carlo of telegraph noise, it also checks the zero-frequency noise
+  (within 10%), the half-height point of the spectrum (ratio 0.5 within
+  0.12), and the rule "variance of a t-second average = S/(2t)" (within
+  25%).
+- **`tests/test_general.py`** checks the four-state model. It checks the
+  single-process limit. It also checks that pair processes do not change the
+  equilibrium variance and only shorten the effective correlation time. It
+  also covers conservation of probability, the zero-frequency noise against
+  a four-state Monte Carlo (within 25%), and the bound (with exact equality
+  when the coupling is proportional to the level energy) over 20 random
+  level sets.
 - **`scripts/make_bcs_table.py`** prints `u(0.5)` next to the expected
   value 0.956887.
 - **`scripts/exp_calorimetry.py`** prints the ratio of the numerical to
@@ -398,7 +405,7 @@ depend on this factor.
 ## 10. Notes on the calculations
 
 - **Units.** All calculations use SI units. Results are stored in
-  convenient units, marked in the key names: energy resolution as sigma_E/h
+  convenient units, and the key names tell you which: energy resolution as sigma_E/h
   in GHz (`sigE_GHz`), temperature resolution in microkelvin (`_uK`), times
   in ns (`_ns`), heat capacities in units of kB (`_kB`).
 - **Noise convention.** Spectra are one-sided. The variance of a
@@ -413,8 +420,8 @@ depend on this factor.
   this share is large, and `make_numbers.py` reports the largest share over
   the other five recipes only (`contShareMaxPct`).
 - **Gap versus temperature.** `gap_bcs` uses the tabulated BCS solution
-  above T/Tc = 0.08 and a low-temperature asymptotic formula below it (the
-  code calls it the "exact low-T asymptote"), so
+  above T/Tc = 0.08, and a low-temperature asymptotic formula below it (the
+  code calls it the "exact low-T asymptote"). So
   `data/bcs_gap_table.npz` must exist (it is stored).
 - **Two values of the BCS ratio.** `constants.py` uses 1.764 (for the
   recipes); `abs_model.py` and the design scripts use 1.7639.
@@ -431,11 +438,11 @@ depend on this factor.
   MoRe 0.501 -> 0.493).
 - **Click Monte Carlo is idealized.** It treats the readout as an
   instantaneous frequency meter (no resonator linewidth or readout
-  nonlinearity) and scores each record at the known photon arrival time,
-  so its signal-to-noise ratios are upper estimates. The description at
-  the top of `exp_nonlinear_click.py` now says this, and gives the correct
-  number of trials (1000 photon and 1000 dark trials per case; it said 400
-  before 2 October 2026).
+  nonlinearity). It also scores each record at the known photon arrival
+  time. So its signal-to-noise ratios are upper estimates. The description
+  at the top of `exp_nonlinear_click.py` now says this. It also gives the
+  correct number of trials (1000 photon and 1000 dark trials per case; it
+  said 400 before 2 October 2026).
 - **Checks that were claimed but not in the tests (fixed).** Free-energy
   continuity across bound-state exit and the agreement of `gap_bcs` with
   its two limits were described as tested but were not. Since 2 October
@@ -449,21 +456,23 @@ depend on this factor.
 
 ## 11. Version history
 
-The repository has no releases or version tags. All code was added on
-21 August 2026 (git history). On 30 September 2026 `make_numbers.py` was
-changed to write `data/numbers.tex` instead of `paper/numbers.tex`, and
-`requirements.txt` was corrected to NumPy 2.0 or newer. On 2 October 2026
-the documentation was updated for the revised manuscript, two derived
-numbers were made computed instead of typed, two checks were added to
-`tests/test_abs.py`, and two stored calibration factors were corrected.
-Details are in [CHANGELOG.md](CHANGELOG.md).
+The repository has no releases or version tags. According to the git
+history, all code was added on 21 August 2026. On 30 September 2026
+`make_numbers.py` was changed to write `data/numbers.tex` instead of
+`paper/numbers.tex`, and `requirements.txt` was corrected to NumPy 2.0 or
+newer. On 2 October 2026 the documentation was updated for the revised
+manuscript. On the same day, two derived numbers were made computed instead
+of typed, two checks were added to `tests/test_abs.py`, and two stored
+calibration factors were corrected. You can find the details in
+[CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## 12. How to cite
 
-Please cite the manuscript. GitHub also shows a **"Cite this repository"**
-button in the right-hand column, which reads `CITATION.cff`.
+Please cite our manuscript. On GitHub you will also see a
+**"Cite this repository"** button in the right-hand column, which reads
+`CITATION.cff`.
 
 > T. M. Mahim, A. S. M. Mohsin, and M. M. Rahman, "Andreev-level
 > occupation noise in graphene Josephson thermal detectors: a sensitivity
@@ -480,9 +489,11 @@ If you use the junction parameters, please also cite the measurements:
 ## 13. License and contact
 
 Code: Apache License 2.0 (see `LICENSE`). Archived copies of the code
-with all generated data are on Zenodo under CC-BY-4.0; every version is
-listed at https://zenodo.org/records/22040477 (the DOI of the version used
-for the manuscript is given in its Data availability statement).
+with all generated data are on Zenodo under CC-BY-4.0. You can find every
+version listed at https://zenodo.org/records/22040477 (the DOI of the
+version used for the manuscript is given in its Data availability
+statement).
 
-Questions and bug reports: please open an issue on this repository, or
-contact Tanvir M. Mahim, BRAC University (tanvir.mahim@bracu.ac.bd).
+If you have a question or find a bug, please open an issue on this
+repository, or contact me, Tanvir M. Mahim, BRAC University
+(tanvir.mahim@bracu.ac.bd).
