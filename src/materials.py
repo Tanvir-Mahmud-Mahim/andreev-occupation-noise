@@ -3,9 +3,11 @@
 Recipe parameters are taken from Table I of Jung et al.,
 "Engineering Andreev Bound States for Thermal Sensing in Proximity
 Josephson Junctions", arXiv:2503.06850 (six measured graphene Josephson
-junction contact recipes). Thermal parameters follow the measured
-electron-phonon coupling of Lee et al., Nature 586, 42 (2020)
-(delta = 3 resonant-supercollision regime, Sigma_3 ~ 2 W m^-2 K^-3).
+junction contact recipes). Thermal parameters follow the electron-phonon
+cooling law with which Lee et al., Nature 586, 42 (2020) fitted their
+graphene Josephson bolometer: the exponent was set to delta = 3
+(supercollision- or disorder-assisted cooling) and Sigma was fitted
+(2.04 to 3.30 W m^-2 K^-3); we use Sigma = 2 W m^-2 K^-3.
 """
 
 from dataclasses import dataclass
@@ -80,16 +82,16 @@ def heat_capacity(Te, n: float, area: float):
     C = (pi^2/3) kB^2 T nu(E_F) A, identical to the gamma T form used by
     Lee et al. Nature 586, 42 (2020). With Sigma = 2 W m^-2 K^-3 it gives
     a thermal time of 0.8 ns at 0.19 K and n = 2e16 m^-2, the same order
-    as the 0.6 ns reported by Lee et al."""
+    as the 0.6 ns estimated by Lee et al."""
     return (np.pi**2 / 3.0) * KB**2 * np.asarray(Te) * dos_ef(n) * area
 
 
 def ep_power(Te, Tp: float, area: float, sigma: float = 2.0,
              delta: int = 3):
     """Electron-phonon cooling power (W), P = Sigma A (Te^d - Tp^d).
-    Default: resonant-supercollision regime delta = 3 with
-    Sigma = 2.0 W m^-2 K^-3 (measured for hBN-encapsulated graphene JJ
-    bolometers, Lee et al. Nature 586, 42 (2020): 2.0-3.3)."""
+    Default: delta = 3 with Sigma = 2.0 W m^-2 K^-3, close to the low end
+    of the values fitted by Lee et al., Nature 586, 42 (2020) for their
+    graphene Josephson bolometer (2.04-3.30, exponent set to 3)."""
     Te = np.asarray(Te, dtype=float)
     return sigma * area * (Te**delta - Tp**delta)
 
