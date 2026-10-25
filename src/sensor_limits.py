@@ -79,7 +79,7 @@ class SensorBudget:
 
     # ---- calorimetric energy resolution ---------------------------------
     def energy_resolution(self, T, tauA, S_ro_y=0.0, which="L",
-                          n_f=6000):
+                          n_f=20000):
         """Matched-filter energy resolution (J) for a delta heat deposit.
 
         Signal chain: deposit E -> dTe(t) = (E/Ce) exp(-t/tau_th)
@@ -97,7 +97,11 @@ class SensorBudget:
         p = self.participation(T)
         conv = (p / 2.0) / I1              # dO -> fractional frequency
         R = s["R_occ"] * conv              # (1/K): dy/dT
-        fmax = 10.0 / (2 * np.pi * min(tauA, tth))
+        # upper limit well above every pole of the problem: the optimal
+        # filter uses information up to ~sqrt(G G_A)/C_e (see coupled.py);
+        # the previous limit 10/(2 pi min(tauA, tth)) truncated the
+        # integral and overstated sigma_E by up to ~10 %
+        fmax = 1e3 / (2 * np.pi * min(tauA, tth))
         f = np.logspace(np.log10(1.0 / (200 * 2 * np.pi * max(tauA,
                         tth))), np.log10(fmax), n_f)
         w = 2 * np.pi * f
