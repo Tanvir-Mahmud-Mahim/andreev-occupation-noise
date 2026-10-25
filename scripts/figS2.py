@@ -13,7 +13,7 @@ R = json.load(open(os.path.join(base, "click_coupled.json")))
 TR = np.load(os.path.join(base, "click_coupled_T_3e-08.npz"))
 
 fig = plt.figure(figsize=(DBL, 4.3))
-gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 0.9], hspace=0.50,
+gs = fig.add_gridspec(2, 2, height_ratios=[1.0, 0.9], hspace=0.62,
                       wspace=0.36, left=0.10, right=0.975, top=0.95,
                       bottom=0.09)
 
@@ -33,13 +33,12 @@ for (T0, W, L), c, mk, lab in geo:
         ax.semilogx(np.array(x) * 1e-9, yv, ls=ls, marker=mk, ms=3.5,
                     color=c, mfc=mfc, lw=1.0,
                     label=lab if scen == "T" else None)
-ax.legend(loc="upper right", fontsize=6.3, handlelength=1.6,
-          labelspacing=0.2, borderaxespad=0.2)
-ax.text(0.03, 0.04, "solid: T,  dashed: C", transform=ax.transAxes,
-        fontsize=7)
+ax.legend(loc="upper right", fontsize=6.5, handlelength=1.6,
+          labelspacing=0.2, borderaxespad=0.3,
+          title="solid: T, dashed: C", title_fontsize=6.5)
 ax.set_xlabel(r"$\tau_{\rm A}$ (s)")
 ax.set_ylabel(r"$d_{\rm KC}$ (26 GHz photon)")
-ax.set_ylim(0, 6.2)
+ax.set_ylim(0, 8.4)
 panel_label(ax, "(a)", dx=-0.25)
 
 # (b) d_KC vs resonator linewidth -------------------------------------------
@@ -56,8 +55,9 @@ for scen, c in (("T", C[0]), ("C", C[1])):
              and e["scen"] == scen and abs(e["tauA_ns"] - 30) < 1][0]
     ax.axhline(ideal, color=c, lw=0.7, ls=":")
 ax.text(1.1, 4.25, "ideal readout (dotted)", fontsize=7, va="bottom")
-ax.legend(loc="center right", fontsize=6.3, handlelength=1.6,
-          labelspacing=0.2, borderaxespad=0.2)
+ax.legend(loc="lower right", bbox_to_anchor=(1.0, 0.37), ncol=2,
+          fontsize=6.5, handlelength=1.6, labelspacing=0.2,
+          columnspacing=0.8, borderaxespad=0.3)
 ax.set_xlabel(r"resonator linewidth $\kappa/2\pi$ (MHz)")
 ax.set_ylabel(r"$d_{\rm KC}$ ($5.3\times0.5\ \mu$m$^2$, 30 ns)")
 ax.set_ylim(0, 5.0)
@@ -77,8 +77,9 @@ ax.plot(t[sel], sm(TR["y1"])[sel] / 1e6, color=C[0], lw=0.6,
         label="photon record")
 ax.plot(t[sel], TR["tpl"][sel] / 1e6, color=C[1], lw=1.4,
         label="noiseless click")
-ax.legend(loc="lower right", ncol=3, fontsize=6.5, handlelength=1.4,
-          borderaxespad=0.2, columnspacing=1.0)
+ax.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=3,
+          fontsize=6.5, handlelength=1.4, borderaxespad=0.1,
+          columnspacing=1.0)
 ax.set_xlabel(r"time after absorption ($\mu$s)")
 ax.set_ylabel(r"$\delta\nu_r$ (MHz), 5 ns average")
 panel_label(ax, "(c)", dx=-0.09, dy=1.07)

@@ -45,7 +45,9 @@ ax.hist(TR["out0"], bins=bins, color="0.6", alpha=0.75,
         label="dark")
 ax.hist(TR["out1"], bins=bins, color=C[0], alpha=0.75,
         label="photon")
-ax.axvline(0.5, color="k", lw=0.8, ls=":")
+hmax = max(np.histogram(TR["out0"], bins)[0].max(),
+           np.histogram(TR["out1"], bins)[0].max())
+ax.plot([0.5, 0.5], [0, 1.08 * hmax], color="k", lw=0.8, ls=":")
 ax.text(0.03, 0.96, rf"$d_{{\rm KC}}={ex['dkc']:.1f}$" + "\n"
         + f"efficiency {ex['eff']:.2f}\n"
         + f"dark fraction {ex['dark']:.3f}",
@@ -54,8 +56,7 @@ ax.legend(loc="upper right", fontsize=6.5, handlelength=1.0,
           borderaxespad=0.2)
 ax.set_xlabel("filter score (photon units)")
 ax.set_ylabel(r"trials per bin (of $10^3$)")
-ax.set_ylim(0, 1.25 * max(np.histogram(TR["out0"], bins)[0].max(),
-                          np.histogram(TR["out1"], bins)[0].max()))
+ax.set_ylim(0, 1.62 * hmax)
 panel_label(ax, "(b)", dx=-0.27)
 
 # (c) breakdown of d_KC from the earlier to the self-consistent model ----

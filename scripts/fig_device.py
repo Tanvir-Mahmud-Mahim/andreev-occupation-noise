@@ -25,7 +25,7 @@ from mpl_toolkits.mplot3d import proj3d
 from figstyle import C, SGL
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-FS = 6.3
+FS = 6.6
 LC = "0.3"
 
 GX = (0.5, 9.5); GY = (0.8, 6.2)          # graphene sheet footprint
@@ -106,10 +106,12 @@ for xr in (XL, XR):
              (xs1, YC[1], ZAU), (xs0, YC[1], ZAU),
              shade(AU, fshade), ec=None)
 
-fig = plt.figure(figsize=(SGL, 2.95))
+# drawn at its printed size (0.72 of the 5.40 in text width), so the
+# font sizes below are the sizes on the page
+fig = plt.figure(figsize=(0.72 * 5.40, 0.72 * 5.40 / 1.1525))
 under = fig.add_axes([0, 0, 1, 1]); under.axis("off")
 under.set_xlim(0, 1); under.set_ylim(0, 1)
-ax = fig.add_axes([-0.18, 0.06, 0.90, 0.86], projection="3d")
+ax = fig.add_axes([-0.045, 0.12, 0.72, 0.76], projection="3d")
 ax.set_axis_off()
 ax.view_init(elev=18, azim=-70)
 ax.set_proj_type("ortho")
@@ -181,9 +183,9 @@ def facetext(pt3, s, fs=FS, color="0.12"):
 
 
 # phases and gate voltage, written directly on the layers ---------------
-facetext((2.9, 3.2, ZAU), r"$-\varphi/2$", fs=6.2)
-facetext((8.1, 2.4, ZAU), r"$+\varphi/2$", fs=6.2)
-facetext((5.0, 0.0, -1.13), r"$V_{\rm BG}=30$ V", fs=6.0,
+facetext((2.9, 3.2, ZAU), r"$-\varphi/2$", fs=6.6)
+facetext((8.1, 2.4, ZAU), r"$+\varphi/2$", fs=6.6)
+facetext((5.0, 0.0, -1.13), r"$V_{\rm BG}=30$ V", fs=6.4,
          color="0.97")
 
 # process arrows on the device (text lives in the key) ------------------
@@ -237,9 +239,9 @@ ov.text(rx + 0.115, ry,
 # ---- key (legend-style labeling, no leader lines) ---------------------
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
-LX, LT = 0.678, 0.712            # swatch x, text x
-FL = 6.2                         # legend font size
-box = FancyBboxPatch((0.663, 0.225), 0.330, 0.730,
+LX, LT = 0.664, 0.698            # swatch x, text x
+FL = 6.6                         # legend font size
+box = FancyBboxPatch((0.650, 0.225), 0.335, 0.730,
                      boxstyle="round,pad=0.008,rounding_size=0.012",
                      fc="white", ec="0.80", lw=0.6,
                      transform=ov.transAxes, zorder=4)
@@ -253,7 +255,7 @@ def swatch(y, c, label):
     ov.text(LT, y, label, fontsize=FL, va="center", zorder=5)
 
 
-ov.text(0.012, 0.968, "(a)", fontsize=9, fontweight="bold",
+ov.text(0.012, 0.968, "(a)", fontsize=9.5, fontweight="bold",
         va="top", zorder=6)
 ov.text(LX, 0.925, "S contact:",
         fontsize=FL, va="center", color="0.15", zorder=5)
@@ -265,10 +267,10 @@ swatch(0.675, OX, r"SiO$_2$ (280 nm)")
 swatch(0.628, SI, "doped Si back gate")
 ov.text(LX, 0.588,
         r"induced gap $\Delta^*=87\ \mu$eV",
-        fontsize=5.6, va="center", color="0.15", zorder=5)
+        fontsize=6.4, va="center", color="0.15", zorder=5)
 ov.text(LX, 0.553,
         r"$\tau=0.30$, $L=0.2\ \mu$m, $W=5.3\ \mu$m",
-        fontsize=5.6, va="center", color="0.15", zorder=5)
+        fontsize=6.4, va="center", color="0.15", zorder=5)
 
 
 def glyphrow(y, kind, col, label, dy=0.0):
@@ -286,7 +288,7 @@ def glyphrow(y, kind, col, label, dy=0.0):
         ov.plot(xa + (xb - xa) * tt,
                 y + 0.006 * np.sin(2 * np.pi * 3 * tt), color=col,
                 lw=0.9, zorder=5)
-    ov.text(LT + 0.020, y + dy, label, fontsize=FL, va="center",
+    ov.text(LT + 0.030, y + dy, label, fontsize=FL, va="center",
             zorder=5)
 
 
@@ -303,7 +305,7 @@ ibox = FancyBboxPatch((0.030, 0.045), 0.295, 0.225,
                       fc="white", ec="0.80", lw=0.6,
                       transform=ov.transAxes, zorder=4)
 ov.add_patch(ibox)
-ov.text(0.180, 0.252, "Andreev doublet (per channel)", fontsize=5.9,
+ov.text(0.180, 0.252, "Andreev doublet (per channel)", fontsize=6.4,
         ha="center", va="center", color="0.15", zorder=5)
 bx0, bx1 = 0.078, 0.215
 Etop, Ebot, Ec = 0.205, 0.145, 0.175
@@ -312,9 +314,9 @@ ov.add_patch(Rectangle((bx0, Etop), bx1 - bx0, 0.030, fc="0.88",
 ov.add_patch(Rectangle((bx0, Ebot - 0.030), bx1 - bx0, 0.030,
                        fc="0.88", ec="none", transform=ov.transAxes,
                        zorder=5))
-ov.text(0.5 * (bx0 + bx1), Etop + 0.015, "continuum", fontsize=5.5,
+ov.text(0.5 * (bx0 + bx1), Etop + 0.015, "continuum", fontsize=6.3,
         ha="center", va="center", color="0.40", zorder=6)
-ov.text(0.5 * (bx0 + bx1), Ebot - 0.015, "continuum", fontsize=5.5,
+ov.text(0.5 * (bx0 + bx1), Ebot - 0.015, "continuum", fontsize=6.3,
         ha="center", va="center", color="0.40", zorder=6)
 for yy in (Etop, Ebot):
     ov.plot([bx0, bx1], [yy, yy], color="0.35", lw=0.6, ls=(0, (3, 2)),
@@ -329,20 +331,20 @@ for dx in (-0.012, 0.012):
     ov.add_patch(plt.Circle((0.5 * (bx0 + bx1) + dx, Ec + 0.019),
                             0.0042, fc="white", ec=C[0], lw=0.5,
                             transform=ov.transAxes, zorder=7))
-ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=5.9, va="center",
+ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=6.4, va="center",
         zorder=5)
-ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=5.9, va="center",
+ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=6.4, va="center",
         color=C[0], zorder=5)
-ov.text(0.223, Ebot, r"$-\Delta^*$", fontsize=5.9, va="center",
+ov.text(0.223, Ebot, r"$-\Delta^*$", fontsize=6.4, va="center",
         zorder=5)
 ov.annotate("", xy=(0.066, 0.230), xytext=(0.066, 0.120), zorder=5,
             arrowprops=dict(arrowstyle="-|>", lw=0.6, color="0.30",
                             mutation_scale=5))
-ov.text(0.057, 0.220, "$E$", fontsize=5.9, ha="right", va="center",
+ov.text(0.057, 0.220, "$E$", fontsize=6.4, ha="right", va="center",
         zorder=5)
 ov.text(0.178, 0.072,
         r"$E_m=\pm\Delta^*\sqrt{1-\tau\sin^2(\varphi/2)}$",
-        fontsize=5.9, ha="center", va="center", zorder=5)
+        fontsize=6.4, ha="center", va="center", zorder=5)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig_device.pdf"))

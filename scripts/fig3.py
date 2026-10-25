@@ -28,16 +28,16 @@ ax.plot(Tcs[iopt], D["scans"]["1e-06"][iopt], "o", color=C[1], ms=4)
 ax.axvline(Tcs[iopt], color="0.6", lw=0.6, ls=":")
 ax.annotate(r"$\Delta^*(T)=2.40\,k_{\rm B}T$",
             xy=(Tcs[iopt] + 0.05, D["scans"]["1e-06"][iopt] * 0.9),
-            xytext=(3.6, 11.0), fontsize=7, ha="left", va="center",
+            xytext=(2.3, 4.6), fontsize=7, ha="left", va="center",
             arrowprops=dict(arrowstyle="->", lw=0.6, shrinkB=2))
 ax.axvline(5.7, color=C[3], lw=0.8, ls="--")
 ax.text(5.55, 3500, "Ta/Ti/Au", color=C[3], fontsize=7,
         ha="right", va="center")
-ax.legend(loc="upper left", fontsize=6.5, handlelength=1.2,
-          labelspacing=0.2, borderaxespad=0.2)
+ax.legend(loc="upper left", bbox_to_anchor=(0.13, 1.0), fontsize=6.5,
+          handlelength=1.2, labelspacing=0.2, borderaxespad=0.2)
 ax.set_xlabel(r"$T_c^*/T$  ($T=100$ mK, Ta/Ti/Au geometry)")
 ax.set_ylabel(r"$\sigma_E/h$ (GHz)")
-ax.set_ylim(8, 2e4)
+ax.set_ylim(3, 2e4)
 panel_label(ax, "(a)", dx=-0.27)
 
 # (b) phase-bias route --------------------------------------------------
@@ -77,10 +77,10 @@ x = np.arange(len(labels))
 cols = [C[0]] * (len(labels) - 2) + [C[1], C[1]]
 ax.bar(x, vals, color=cols, width=0.62, log=True)
 ax.set_xticks(x, labels, fontsize=7)
-ax.axhline(26, color="k", lw=0.9, ls="--")
-ax.text(-0.42, 30, "one 26 GHz photon", fontsize=7,
-        ha="left", va="bottom",
-        bbox=dict(fc="white", ec="none", pad=0.5))
+ax.axhline(26, color="k", lw=0.9, ls="--",
+           label="energy of one 26 GHz photon")
+ax.legend(loc="upper left", fontsize=7, handlelength=2.2,
+          borderaxespad=0.4)
 
 
 def fmt(v):
@@ -92,8 +92,9 @@ def fmt(v):
 
 for xi, v in zip(x, vals):
     # label above each bar; the white box keeps it clear of the photon line
-    ax.text(xi, v * 1.35, fmt(v), fontsize=7, ha="center", va="bottom",
-            bbox=dict(fc="white", ec="none", pad=0.3))
+    # bars that end near the photon line get their label above the line
+    ax.text(xi, max(v * 1.35, 26 * 1.5), fmt(v), fontsize=7,
+            ha="center", va="bottom")
 ax.set_ylabel(r"$\sigma_E/h$ (GHz)")
 ax.set_ylim(0.5, 2e7)
 ax.text(0.99, 0.95, r"$\tau_{\rm A}=1\ \mu$s;  recipes at $T=T_c^*/6$",

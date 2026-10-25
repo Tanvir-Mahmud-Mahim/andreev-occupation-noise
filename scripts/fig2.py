@@ -15,7 +15,7 @@ D = json.load(open(os.path.join(os.path.dirname(__file__), "..",
 freqs = np.array(D["freqs"])
 
 fig, axs = plt.subplots(1, 3, figsize=(DBL, 2.25))
-plt.subplots_adjust(wspace=0.55, left=0.085, right=0.91, top=0.89,
+plt.subplots_adjust(wspace=0.55, left=0.085, right=0.91, top=0.86,
                     bottom=0.20)
 
 # (a) spectra -----------------------------------------------------------
@@ -40,7 +40,7 @@ ax.set_xlabel(r"$f$ (Hz)")
 ax.set_ylabel(r"$\sqrt{S_\nu}$ (Hz$/\sqrt{\rm Hz}$)")
 ax.set_xlim(1, 1e7); ax.set_ylim(3, 900)
 ax.set_xticks([1, 1e2, 1e4, 1e6])
-panel_label(ax, "(a)", dx=-0.30)
+panel_label(ax, "(a)", dx=-0.30, dy=1.12)
 
 # (b) temperature-resolution budgets vs T (Ta/Ti/Au) --------------------
 ax = axs[1]
@@ -58,13 +58,13 @@ for tA, c, lab in ((1e-8, C[0], "10 ns"), (1e-6, C[1], r"1 $\mu$s"),
 ph = [sb.dT_phonon(T, 1.0) * 1e6 for T in Ts]
 ax.semilogy(Ts * 1e3, ph, color="k", lw=1.2, ls="--")
 ax.text(60, 0.95, "electron-phonon", fontsize=7, va="top")
-ax.text(0.96, 0.95, "Ta/Ti/Au", transform=ax.transAxes, fontsize=7,
+ax.text(0.90, 0.95, "Ta/Ti/Au", transform=ax.transAxes, fontsize=7,
         ha="right", va="top")
 ax.set_xlabel(r"$T$ (mK)")
 ax.set_ylabel(r"$\delta T_{\min}$ ($\mu$K, $t=1$ s)")
 ax.set_ylim(0.03, 3e4)
 ax.set_xticks([0, 200, 400])
-panel_label(ax, "(b)", dx=-0.30)
+panel_label(ax, "(b)", dx=-0.30, dy=1.12)
 
 # (c) regime map --------------------------------------------------------
 ax = axs[2]
@@ -79,14 +79,14 @@ ax.set_xlabel(r"$T$ (mK)")
 ax.set_ylabel(r"$\tau_{\rm A}$ (s)")
 ax.text(40, 1e-5, "Andreev\nlimited", fontsize=7.5, color="w",
         ha="left")
-ax.text(330, 4e-9, "phonon\nlimited", fontsize=7.5, color="k",
-        ha="center")
+ax.text(300, 3.2e-9, "phonon\nlimited", fontsize=7, color="k",
+        ha="center", va="center", linespacing=1.0)
 ax.set_xticks([0, 200, 400])
 cb = fig.colorbar(pc, ax=ax, pad=0.03, aspect=25)
 cb.set_label(r"$\log_{10}(\delta T_{\rm A}/\delta T_{\rm ph})$",
              fontsize=7.5)
 cb.ax.tick_params(labelsize=7)
-panel_label(ax, "(c)", dx=-0.42)
+panel_label(ax, "(c)", dx=-0.42, dy=1.12)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig2.pdf"))

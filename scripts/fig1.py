@@ -15,7 +15,7 @@ ts = np.array(D["t"])
 
 fig, axs = plt.subplots(1, 2, figsize=(DBL, 1.85))
 plt.subplots_adjust(wspace=0.36, left=0.10, right=0.98, top=0.92,
-                    bottom=0.18)
+                    bottom=0.235)
 
 # (b) universal responsivity family -------------------------------------
 ax = axs[0]
