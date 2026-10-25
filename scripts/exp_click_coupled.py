@@ -47,8 +47,8 @@ def design(T0, W, L, y=2.3994, nu=None, delta=3, T_anchor=0.19):
         nu = 3e9 if 2 * D / H_PLANCK < 12e9 else 6e9
     sb = SensorBudget(r, nu_r=nu)
     if delta != 3:
-        # Sigma_delta chosen so that G_ep(T_anchor) equals the measured
-        # delta = 3 value (Sigma = 2 W m^-2 K^-3) of Lee et al.
+        # Sigma_delta chosen so that G_ep(T_anchor) equals the delta = 3
+        # value (Sigma = 2 W m^-2 K^-3, from the fit of Lee et al.)
         G3 = 3 * sb.sigma * r.area * T_anchor ** 2
         sb = SensorBudget(r, nu_r=nu, delta=delta,
                           sigma=G3 / (delta * r.area *

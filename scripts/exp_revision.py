@@ -2,8 +2,8 @@
 
 (a) Electron-phonon exponent: crossover time and thermal time for
     delta = 3, 4, 5, 6, with Sigma_delta chosen so that the thermal
-    conductance equals the measured delta = 3 value of Lee et al. at
-    their 0.19 K operating point.
+    conductance equals that of the delta = 3 law (Sigma = 2 W m^-2 K^-3,
+    from the fit of Lee et al.) at their 0.19 K operating point.
 (b) Level-dependent (activated) exchange: floor for current readout at
     the phase of maximum current, and the gap optimum when the exchange
     time itself scales as exp(Delta*/kB T).
