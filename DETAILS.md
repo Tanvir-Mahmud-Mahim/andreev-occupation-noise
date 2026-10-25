@@ -373,5 +373,6 @@ the code was extended for the revised manuscript: a two-body thermal model,
 a self-consistent photon click simulation that replaces
 `exp_nonlinear_click.py`, the analyses requested in review, a new test file,
 and a fix of the energy-resolution filter. The archived version for the
-revised manuscript is v1.11 on Zenodo (doi:10.5281/zenodo.23646142). The
+revised manuscript is v1.12 on Zenodo (doi:10.5281/zenodo.23647063); it
+differs from v1.11 only in the layout of the figures. The
 details are in [CHANGELOG.md](CHANGELOG.md).

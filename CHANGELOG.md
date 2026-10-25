@@ -4,6 +4,24 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Figure layout (25 October 2026, Zenodo v1.12)
+
+No model, data or result changed.
+
+- `scripts/fig_device.py`: the schematic is drawn at its printed size
+  (0.72 of the text width) with all text at 6.3 pt or more; the device is
+  no longer cut at the left edge and the key box no longer at the right.
+- `scripts/fig1.py`: more room for the x-axis label.
+- `scripts/fig2.py`: panel labels moved clear of the tick labels; the
+  "phonon limited" label no longer crosses the boundary curve.
+- `scripts/fig3.py`: legend of (a) moved clear of the dotted optimum line
+  and the annotation below the curves; the 26 GHz photon line is named in
+  a legend instead of a label over the bars of (c).
+- `scripts/fig4.py`: the statistics in (b) no longer overlap the
+  histogram or the threshold line.
+- `scripts/figS2.py`: legends moved clear of the data in all panels.
+- Documentation gives the v1.12 DOI (doi:10.5281/zenodo.23647063).
+
 ## Revision after peer review (25 October 2026)
 
 Changes made while answering the reviewers of Materials Today Physics.

@@ -234,7 +234,7 @@ If you use the junction parameters, please also cite the measurements:
 Code: Apache License 2.0 (see `LICENSE`). Archived copies of the code
 with all generated data are on Zenodo under CC-BY-4.0. You can find every
 version listed at https://zenodo.org/records/22040477. The version for
-the revised manuscript is v1.11, doi:10.5281/zenodo.23646142, as given in
+the revised manuscript is v1.12, doi:10.5281/zenodo.23647063, as given in
 its Data availability statement.
 
 If you have a question or find a bug, please open an issue on this
