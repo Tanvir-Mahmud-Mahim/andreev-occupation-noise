@@ -189,7 +189,7 @@ values are computed from the result files.
 | Frequency noise at 1 Hz, Ta/Ti/Au at Tc*/6, versus the readout floor [`SnuTa`, `SnuFloor`] | 198 versus 26 Hz per root hertz |
 | Click simulation, 5.3 x 0.5 um at 50 mK, tau_A = 30 ns, ideal readout: Kumar-Carroll index, scenario T / C [`kcFullT`, `kcFullC`] | 4.1 / 3.3 |
 | Same with a 50 MHz resonator and 30 photons [`kcResFifty`] | 1.6 |
-| Best index found with the measured cooling law [`kcBest`] | 5.0 |
+| Best index found with the T^3 cooling law [`kcBest`] | 5.0 |
 
 ---
 
@@ -254,11 +254,13 @@ factor 2 into the current instead. This is why `calibration.json` lists
 938 channels for Ta/Ti/Au while `test_abs.py` prints N=469.
 
 **Heat flow.** The electron-phonon cooling power is Sigma A (Te^3 - T0^3)
-with Sigma = 2.0 W m^-2 K^-3, the low end of the range reported by Lee
-*et al.*, Nature 586, 42 (2020) (https://doi.org/10.1038/s41586-020-2752-4)
-for a graphene Josephson bolometer operated at 0.19 K. With Sigma = 2.0,
-the code gives a thermal time of 0.8 ns at 0.19 K and n = 2e16 m^-2, the
-same order as the 0.6 ns reported by Lee *et al.* `exp_revision.py` and
+with Sigma = 2.0 W m^-2 K^-3. This is the law with which Lee *et al.*,
+Nature 586, 42 (2020) (https://doi.org/10.1038/s41586-020-2752-4) fitted
+a graphene Josephson bolometer operated at 0.19 K. They set the exponent
+to 3 and fitted Sigma between 2.04 and 3.30 W m^-2 K^-3; 2.0 is close to
+the low end of that range. With Sigma = 2.0, the code gives a thermal time
+of 0.8 ns at 0.19 K and n = 2e16 m^-2, the same order as the 0.6 ns
+estimated by Lee *et al.* `exp_revision.py` and
 `exp_click_coupled.py` also use exponents 4 to 6, with Sigma chosen so that
 the thermal conductance at 0.19 K is unchanged.
 
@@ -373,6 +375,7 @@ the code was extended for the revised manuscript: a two-body thermal model,
 a self-consistent photon click simulation that replaces
 `exp_nonlinear_click.py`, the analyses requested in review, a new test file,
 and a fix of the energy-resolution filter. The archived version for the
-revised manuscript is v1.12 on Zenodo (doi:10.5281/zenodo.23647063); it
-differs from v1.11 only in the layout of the figures. The
+revised manuscript is v1.13 on Zenodo (doi:10.5281/zenodo.23648106). It
+differs from v1.11 only in the layout of the figures (v1.12) and in
+comments and documentation about the cooling law of Lee *et al.* (v1.13). The
 details are in [CHANGELOG.md](CHANGELOG.md).

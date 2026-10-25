@@ -4,6 +4,19 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Documentation of the cooling law (25 October 2026, Zenodo v1.13)
+
+No model, data or result changed; the four test files give output
+identical to their reference files.
+
+- `src/materials.py`, `scripts/exp_revision.py`,
+  `scripts/exp_click_coupled.py`, `DETAILS.md`: comments now say that
+  Lee *et al.* fitted their bolometer with the exponent set to 3 and
+  Sigma between 2.04 and 3.30 W m^-2 K^-3 (Sigma = 2 is close to the low
+  end), rather than calling these values measured; the 0.6 ns thermal
+  time of Lee *et al.* is an estimate.
+- Documentation gives the v1.13 DOI (doi:10.5281/zenodo.23648106).
+
 ## Figure layout (25 October 2026, Zenodo v1.12)
 
 No model, data or result changed.
