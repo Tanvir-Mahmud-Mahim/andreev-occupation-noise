@@ -1,5 +1,5 @@
-"""Figure 4: speed-sensitivity trade-off and nonlinear click Monte
-Carlo (single-shot trace and matched-filter discrimination)."""
+"""Figure 4: linear-response energy resolution and the self-consistent
+single-photon click Monte Carlo (revision, 2026)."""
 import sys, os, json
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -9,81 +9,96 @@ from figstyle import C, DBL, panel_label
 
 base = os.path.join(os.path.dirname(__file__), "..", "data")
 D = json.load(open(os.path.join(base, "calorimetry.json")))
-NL = json.load(open(os.path.join(base, "nonlinear_click.json")))
-TR = np.load(os.path.join(base, "click_traces_3e-08.npz"))
+R = json.load(open(os.path.join(base, "click_coupled.json")))
+TR = np.load(os.path.join(base, "click_coupled_T_3e-08.npz"))
 
-fig, axs = plt.subplots(1, 3, figsize=(DBL, 2.35))
-plt.subplots_adjust(wspace=0.42, left=0.065, right=0.985, top=0.90,
-                    bottom=0.19)
+fig = plt.figure(figsize=(DBL, 4.45))
+gs = fig.add_gridspec(1, 2, wspace=0.38, left=0.105, right=0.975,
+                      top=0.945, bottom=0.57)
 
-# (a) sigma_E vs tauA (linear response) ---------------------------------
-ax = axs[0]
+# (a) sigma_E vs tauA (linear response, coupled model) -------------------
+ax = fig.add_subplot(gs[0, 0])
 tA = np.array(D["tauAs"])
-ax.loglog(tA, D["sigE_ana"], color="0.5", lw=0.9, ls="--",
-          label="Andreev only (analytic)")
-ax.loglog(tA, D["sigE_num_nofloor"], color=C[0], lw=1.1,
-          label="+ phonon TFN")
-ax.loglog(tA, D["sigE_num"], color=C[1], lw=1.1,
-          label="+ readout floor")
+ax.loglog(tA, D["closed"], color="k", lw=1.1,
+          label="Andreev + phonon (closed form)")
+ax.loglog(tA, D["floor"], color=C[0], lw=1.1, label="+ ideal readout")
+ax.loglog(tA, D["floor_k10"], color=C[2], lw=1.1,
+          label=r"+ resonator, $\kappa/2\pi=10$ MHz")
+ax.loglog(tA, D["floor_k1"], color=C[1], lw=1.1,
+          label=r"+ resonator, $\kappa/2\pi=1$ MHz")
 ax.axhline(26, color="k", lw=0.8, ls=":")
-ax.text(3.4e-8, 28, "26 GHz photon", fontsize=6, va="bottom")
-ax.text(2.9e-6, 3.9, r"$\propto\sqrt{\tau_{\rm A}}$", fontsize=7,
-        color="0.4", rotation=22)
-ax.legend(loc="upper left", handlelength=1.5, fontsize=5.6)
+ax.text(4e-9, 30, "26 GHz photon", fontsize=7, va="bottom")
+ax.legend(loc="lower right", handlelength=1.3, fontsize=6.3,
+          labelspacing=0.2, borderaxespad=0.2)
 ax.set_xlabel(r"$\tau_{\rm A}$ (s)")
 ax.set_ylabel(r"$\sigma_E/h$ (GHz)")
-ax.set_ylim(0.8, 200)
-ax.text(0.96, 0.05, "matched design,\n100 mK, linear response",
-        transform=ax.transAxes, fontsize=6.2, ha="right")
-panel_label(ax, "(a)")
+ax.set_ylim(0.3, 300)
+ax.text(0.03, 0.96, r"$5.3\times0.5\ \mu$m$^2$, 50 mK",
+        transform=ax.transAxes, fontsize=7, va="top")
+panel_label(ax, "(a)", dx=-0.27)
 
-# (b) running matched-filter output (nonlinear MC, 50 mK) ---------------
-ax = axs[1]
-n = len(TR["tgrid"])
-dt = float(TR["tgrid"][1] - TR["tgrid"][0])
-lag = (np.arange(n) - n // 2) * dt * 1e6
-rp = np.roll(TR["run_photon"], n // 2)
-rn = np.roll(TR["run_no"], n // 2)
-ax.plot(lag, rn, color="0.6", lw=0.8)
-ax.plot(lag, rp, color=C[0], lw=0.9)
-ax.axhline(0.5, color="k", lw=0.7, ls=":")
-ax.text(-0.046, 0.53, "threshold", fontsize=6, color="0.25",
-        va="bottom")
-ax.text(0.012, 0.99, "photon", color=C[0], fontsize=6.5)
-ax.text(0.085, -0.33, "no photon", color="0.45", fontsize=6.5)
-ax.set_xlabel(r"arrival-time offset ($\mu$s)")
-ax.set_ylabel("running filter output")
-ax.set_xlim(-0.05, 0.15)      # window around the arrival time,
-                              # clear of the circular-wrap alias
-ax.set_ylim(-0.45, 1.28)
-ax.text(0.97, 0.95, "50 mK, $C_e=10\\,k_{\\rm B}$, "
-        r"$\tau_{\rm A}=30$ ns", transform=ax.transAxes,
-        fontsize=6.2, ha="right", va="top")
-panel_label(ax, "(b)", dx=-0.20)
-
-# (c) matched-filter score histograms (nonlinear MC) --------------------
-ax = axs[2]
-key = "T0.05_W5.3_L0.5"
-snr = NL[key]["snr_mc_T_3e-08"]
-eff = NL[key]["eff_T_3e-08"]
-bins = np.linspace(-0.55, 1.55, 57)
+# (b) score histograms, full model, scenario T, 30 ns ---------------------
+ax = fig.add_subplot(gs[0, 1])
+ex = R["example"]["T"]
+bins = np.linspace(-1.0, 2.2, 49)
 ax.hist(TR["out0"], bins=bins, color="0.6", alpha=0.75,
-        label="dark (1000 trials)")
+        label="dark")
 ax.hist(TR["out1"], bins=bins, color=C[0], alpha=0.75,
-        label="photon (1000 trials)")
+        label="photon")
 ax.axvline(0.5, color="k", lw=0.8, ls=":")
-ax.text(0.475, 62, "threshold", fontsize=6, ha="right", va="center",
-        color="0.25", rotation=90)
-ax.text(0.03, 0.97, f"MC SNR = {snr:.1f}\n"
-        f"efficiency = {eff:.3f}\n"
-        "dark fraction = 0/1000",
-        transform=ax.transAxes, fontsize=6.2, va="top")
-ax.legend(loc="upper right", fontsize=5.6, handlelength=1.2,
-          borderaxespad=0.3)
-ax.set_xlabel("matched-filter score (photon units)")
-ax.set_ylabel("trials per bin")
-ax.set_ylim(0, 196)
-panel_label(ax, "(c)", dx=-0.20)
+ax.text(0.03, 0.96, rf"$d_{{\rm KC}}={ex['dkc']:.1f}$" + "\n"
+        + f"efficiency {ex['eff']:.2f}\n"
+        + f"dark fraction {ex['dark']:.3f}",
+        transform=ax.transAxes, fontsize=7, va="top")
+ax.legend(loc="upper right", fontsize=6.5, handlelength=1.0,
+          borderaxespad=0.2)
+ax.set_xlabel("filter score (photon units)")
+ax.set_ylabel(r"trials per bin (of $10^3$)")
+ax.set_ylim(0, 1.25 * max(np.histogram(TR["out0"], bins)[0].max(),
+                          np.histogram(TR["out1"], bins)[0].max()))
+panel_label(ax, "(b)", dx=-0.27)
+
+# (c) breakdown of d_KC from the earlier to the self-consistent model ----
+gs2 = fig.add_gridspec(1, 1, left=0.44, right=0.975, top=0.40,
+                       bottom=0.075)
+ax = fig.add_subplot(gs2[0, 0])
+rows = [("earlier model (6 GHz, ideal readout)", "earlier model, 6 GHz"),
+        ("earlier model, 3 GHz readout", "earlier model, 3 GHz"),
+        ("+ noise follows the hot electrons", "+ nonstationary noise"),
+        ("+ energy exchange with Andreev levels",
+         "+ energy exchange (full)")]
+vals = {s: [] for s in ("T", "C")}
+for _, key in rows:
+    for s in ("T", "C"):
+        v = [b["dkc"] for b in R["breakdown"] if b["step"] == key and
+             b["scen"] == s and abs(b["tauA_ns"] - 30) < 1]
+        vals[s].append(v[0])
+labels = [r[0] for r in rows]
+for nadd, lab in ((0.0, r"+ resonator, $\kappa/2\pi=50$ MHz, 30 photons"),
+                  (14.0, r"+ amplifier with $n_{\rm add}=14$")):
+    labels.append(lab)
+    for s in ("T", "C"):
+        v = [r["dkc"] for r in R["readout"] if r["scen"] == s and
+             abs(r["kappa_MHz"] - 50) < 1 and r["nadd"] == nadd]
+        vals[s].append(v[0])
+y = np.arange(len(labels))[::-1]
+h = 0.36
+ax.barh(y + h / 2, vals["T"], height=h, color=C[0],
+        label="scenario T (exchange speeds up)")
+ax.barh(y - h / 2, vals["C"], height=h, color=C[1],
+        label="scenario C (constant exchange)")
+for yi, vt, vc in zip(y, vals["T"], vals["C"]):
+    ax.text(vt + 0.08, yi + h / 2, f"{vt:.1f}", fontsize=7,
+            va="center")
+    ax.text(vc + 0.08, yi - h / 2, f"{vc:.1f}", fontsize=7,
+            va="center")
+ax.set_yticks(y, labels, fontsize=7)
+ax.set_xlabel(r"$d_{\rm KC}$, 26 GHz photon ($5.3\times0.5\ \mu$m$^2$,"
+              r" 50 mK, $\tau_{\rm A}=30$ ns)")
+ax.set_xlim(0, 9.5)
+ax.legend(loc="lower right", fontsize=6.5, handlelength=1.0,
+          borderaxespad=0.2)
+panel_label(ax, "(c)", dx=-0.80, dy=1.08)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig4.pdf"))

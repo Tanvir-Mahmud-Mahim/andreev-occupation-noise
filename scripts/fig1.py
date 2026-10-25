@@ -13,9 +13,9 @@ D = json.load(open(os.path.join(os.path.dirname(__file__), "..",
                                 "data", "universal.json")))
 ts = np.array(D["t"])
 
-fig, axs = plt.subplots(1, 2, figsize=(3.85, 2.72))
-plt.subplots_adjust(wspace=0.40, left=0.115, right=0.98, top=0.93,
-                    bottom=0.17)
+fig, axs = plt.subplots(1, 2, figsize=(DBL, 1.85))
+plt.subplots_adjust(wspace=0.36, left=0.10, right=0.98, top=0.92,
+                    bottom=0.18)
 
 # (b) universal responsivity family -------------------------------------
 ax = axs[0]
@@ -28,12 +28,12 @@ for k, c in zip(show, cols):
     h = np.abs(np.array(D["hI"][k]))
     ax.semilogy(ts, h, color=c, lw=1.1, label=names[k])
 hnd, lbl = ax.get_legend_handles_labels()
-ax.legend(hnd[::-1], lbl[::-1], loc="lower right", fontsize=5.8,
-          handlelength=1.2, labelspacing=0.25, borderaxespad=0.3)
+ax.legend(hnd[::-1], lbl[::-1], loc="lower right", fontsize=7,
+          handlelength=1.2, labelspacing=0.2, borderaxespad=0.3)
 ax.set_xlabel(r"$T/T_c^*$")
 ax.set_ylabel(r"$-T_c^*\,\mathrm{d}\ln I_c/\mathrm{d}T$")
 ax.set_xlim(0.06, 0.94); ax.set_ylim(1e-6, 30)
-panel_label(ax, "(b)")
+panel_label(ax, "(b)", dx=-0.19)
 
 # (c) channel decomposition for tau = 0.3 -------------------------------
 ax = axs[1]
@@ -48,7 +48,7 @@ ax.legend(loc="lower right", handlelength=1.6)
 ax.set_xlabel(r"$T/T_c^*$")
 ax.set_ylabel(r"$-T_c^*\,\mathrm{d}\ln I'(0)/\mathrm{d}T$")
 ax.set_xlim(0.06, 0.94); ax.set_ylim(1e-7, 30)
-panel_label(ax, "(c)")
+panel_label(ax, "(c)", dx=-0.19)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig1.pdf"))

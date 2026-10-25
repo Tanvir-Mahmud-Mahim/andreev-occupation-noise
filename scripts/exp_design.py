@@ -1,5 +1,6 @@
 """Fig. 2 and Fig. 3 data: noise spectra, regime map, matched-level
-design, recipe budgets, and the roadmap point.
+design, recipe budgets, and the roadmap point. Energy resolutions use
+the closed form of the coupled two-node model (src/coupled.py).
 """
 import sys, os, json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -8,6 +9,7 @@ from constants import KB, H_PLANCK
 from materials import RECIPES, Recipe
 from sensor_limits import SensorBudget
 from short_junction import ShortJunction
+import coupled as cp
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "data")
 res = {}
@@ -21,10 +23,12 @@ for r in RECIPES:
         s = sb.sj.andreev_sums(1e-4, T, "L")
         a, _ = sb.dT_andreev(T, tauA, 1.0)
         ph = sb.dT_phonon(T, 1.0)
-        sig = sb.energy_resolution_analytic_A(T, tauA)
+        # energy resolution: closed form of the two-node model,
+        # Andreev + phonon noise (coupled.py)
+        sig = cp.sigmaE_closed(T, sb.Ce(T), s["C_A"], sb.Gep(T), tauA)
         Ic1 = sb.sj.Ic(T)
         fom = -sb.sj.dlnIc_dT(T)          # |dIc/dT| / Ic  (1/K)
-        tstar = sb.tau_th(T) * s["C_A"] / sb.Ce(T)
+        tstar = s["C_A"] / sb.Gep(T)          # tauA* = C_A / G_ep
         budgets.append(dict(
             label=r.label, T=T, DkT=r.Delta / (KB * T),
             CA_kB=s["C_A"] / KB, Ce_kB=sb.Ce(T) / KB,
@@ -75,8 +79,9 @@ for tA in (1e-7, 1e-6, 1e-5):
                     RECIPES[0].Vbg, RECIPES[0].tau, RECIPES[0].Ic20,
                     RECIPES[0].Rn)
         sbb = SensorBudget(rr)
-        sig.append(sbb.energy_resolution_analytic_A(T0, tA) /
-                   H_PLANCK / 1e9)
+        ss = sbb.sj.andreev_sums(1e-4, T0, "L")
+        sig.append(cp.sigmaE_closed(T0, sbb.Ce(T0), ss["C_A"],
+                                    sbb.Gep(T0), tA) / H_PLANCK / 1e9)
     scans[f"{tA:.0e}"] = sig
 res["scan_Tcs"] = Tcs.tolist()
 res["scan_T0"] = T0
@@ -100,8 +105,11 @@ for tau in (0.78, 0.95, 0.99):
     for p0 in phis:
         s = sj.andreev_sums(p0, T0, "I")
         ST0 = s["S0_over_tau"] * tauA / s["R_occ"]**2
-        sig.append(sbb.Ce(T0) * np.sqrt(ST0 / sbb.tau_th(T0)) /
-                   H_PLANCK / 1e9)
+        # two-node closed form with the effective x = G S_T(0)/(4 kB T^2)
+        # (equal to G tauA / C_A when the bound is saturated)
+        x = sbb.Gep(T0) * ST0 / (4 * KB * T0**2)
+        sig.append(2 * np.sqrt(KB * T0**2 * sbb.Ce(T0)) *
+                   (x * (1 + x))**0.25 / H_PLANCK / 1e9)
     E0 = sj.E(phis, T0) / (KB * T0)
     phi_scan[str(tau)] = dict(phi=phis.tolist(), sigE=sig,
                               EkT=E0.tolist())
@@ -119,8 +127,10 @@ for T in (0.05, 0.1):
         rr = Recipe("r", "r", Tc, 1e-6, L, W, 30.0, 0.3,
                     RECIPES[0].Ic20, RECIPES[0].Rn)
         sbb = SensorBudget(rr)
+        ss = sbb.sj.andreev_sums(1e-4, T, "L")
         for tA in (1e-7, 1e-6):
-            sig = sbb.energy_resolution_analytic_A(T, tA)
+            sig = cp.sigmaE_closed(T, sbb.Ce(T), ss["C_A"], sbb.Gep(T),
+                                   tA)
             roadmap.append(dict(T=T, Tc=Tc, W_um=W * 1e6, L_um=L * 1e6,
                                 tauA_ns=tA * 1e9,
                                 sigE_GHz=sig / H_PLANCK / 1e9))

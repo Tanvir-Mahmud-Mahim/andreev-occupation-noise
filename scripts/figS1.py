@@ -22,8 +22,8 @@ for i in range(1, len(bins)):
         fb.append(np.mean(fr[m])); Sb.append(np.mean(S[m]))
 S_an = M * 16 * f0 * (1 - f0) * tauA / (1 + (2 * np.pi *
                                              np.array(fb) * tauA)**2)
-fig, ax = plt.subplots(figsize=(SGL, 2.3))
-plt.subplots_adjust(left=0.16, right=0.97, top=0.95, bottom=0.2)
+fig, ax = plt.subplots(figsize=(SGL, 2.4))
+plt.subplots_adjust(left=0.17, right=0.97, top=0.95, bottom=0.2)
 ax.loglog(fb, Sb, 'o', ms=3, color=C[0], label='Monte Carlo')
 ax.loglog(fb, S_an, '-', color=C[1], lw=1.2, label='analytic Lorentzian')
 ax.set_xlabel('frequency (units of $1/\\tau_{\\rm A}$)')

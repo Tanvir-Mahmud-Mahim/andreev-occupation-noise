@@ -25,7 +25,7 @@ from mpl_toolkits.mplot3d import proj3d
 from figstyle import C, SGL
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
-FS = 5.8
+FS = 6.3
 LC = "0.3"
 
 GX = (0.5, 9.5); GY = (0.8, 6.2)          # graphene sheet footprint
@@ -238,7 +238,7 @@ ov.text(rx + 0.115, ry,
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
 LX, LT = 0.678, 0.712            # swatch x, text x
-FL = 5.6                         # legend font size
+FL = 6.2                         # legend font size
 box = FancyBboxPatch((0.663, 0.225), 0.330, 0.730,
                      boxstyle="round,pad=0.008,rounding_size=0.012",
                      fc="white", ec="0.80", lw=0.6,
@@ -255,7 +255,7 @@ def swatch(y, c, label):
 
 ov.text(0.012, 0.968, "(a)", fontsize=9, fontweight="bold",
         va="top", zorder=6)
-ov.text(LX, 0.925, "S contact,  $\\Delta^*=87\\ \\mu$eV:",
+ov.text(LX, 0.925, "S contact:",
         fontsize=FL, va="center", color="0.15", zorder=5)
 swatch(0.878, AU, "Au (5 nm)")
 swatch(0.831, TI, "Ti (60 nm)")
@@ -263,9 +263,12 @@ swatch(0.784, TA, "Ta (10 nm, adhesion)")
 swatch(0.722, GR, "monolayer graphene")
 swatch(0.675, OX, r"SiO$_2$ (280 nm)")
 swatch(0.628, SI, "doped Si back gate")
-ov.text(LX, 0.570,
-        r"$\tau=0.30$,  $L=0.2\ \mu$m,  $W=5.3\ \mu$m",
-        fontsize=5.4, va="center", color="0.15", zorder=5)
+ov.text(LX, 0.588,
+        r"induced gap $\Delta^*=87\ \mu$eV",
+        fontsize=5.6, va="center", color="0.15", zorder=5)
+ov.text(LX, 0.553,
+        r"$\tau=0.30$, $L=0.2\ \mu$m, $W=5.3\ \mu$m",
+        fontsize=5.6, va="center", color="0.15", zorder=5)
 
 
 def glyphrow(y, kind, col, label, dy=0.0):
@@ -292,7 +295,7 @@ glyphrow(0.436, "double", C[0],
          "quasiparticle exchange,\n$\\tau_{\\rm A}$", dy=-0.012)
 glyphrow(0.352, "wavy", C[4], "microwave photon, $h\\nu$")
 glyphrow(0.288, "arrow", C[2],
-         "e-ph cooling,\n$\\Sigma A\\,(T_e^3-T_p^3)$", dy=-0.012)
+         "e-ph cooling,\n$\\Sigma A\\,(T_e^3-T_0^3)$", dy=-0.012)
 
 # ---- Andreev-doublet energy inset (bottom left) -----------------------
 ibox = FancyBboxPatch((0.030, 0.045), 0.295, 0.225,
@@ -300,7 +303,7 @@ ibox = FancyBboxPatch((0.030, 0.045), 0.295, 0.225,
                       fc="white", ec="0.80", lw=0.6,
                       transform=ov.transAxes, zorder=4)
 ov.add_patch(ibox)
-ov.text(0.190, 0.252, "Andreev doublet (per channel)", fontsize=5.2,
+ov.text(0.180, 0.252, "Andreev doublet (per channel)", fontsize=5.9,
         ha="center", va="center", color="0.15", zorder=5)
 bx0, bx1 = 0.078, 0.215
 Etop, Ebot, Ec = 0.205, 0.145, 0.175
@@ -309,9 +312,9 @@ ov.add_patch(Rectangle((bx0, Etop), bx1 - bx0, 0.030, fc="0.88",
 ov.add_patch(Rectangle((bx0, Ebot - 0.030), bx1 - bx0, 0.030,
                        fc="0.88", ec="none", transform=ov.transAxes,
                        zorder=5))
-ov.text(0.5 * (bx0 + bx1), Etop + 0.015, "continuum", fontsize=4.8,
+ov.text(0.5 * (bx0 + bx1), Etop + 0.015, "continuum", fontsize=5.5,
         ha="center", va="center", color="0.40", zorder=6)
-ov.text(0.5 * (bx0 + bx1), Ebot - 0.015, "continuum", fontsize=4.8,
+ov.text(0.5 * (bx0 + bx1), Ebot - 0.015, "continuum", fontsize=5.5,
         ha="center", va="center", color="0.40", zorder=6)
 for yy in (Etop, Ebot):
     ov.plot([bx0, bx1], [yy, yy], color="0.35", lw=0.6, ls=(0, (3, 2)),
@@ -326,20 +329,20 @@ for dx in (-0.012, 0.012):
     ov.add_patch(plt.Circle((0.5 * (bx0 + bx1) + dx, Ec + 0.019),
                             0.0042, fc="white", ec=C[0], lw=0.5,
                             transform=ov.transAxes, zorder=7))
-ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=5.2, va="center",
+ov.text(0.223, Etop, r"$+\Delta^*$", fontsize=5.9, va="center",
         zorder=5)
-ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=5.2, va="center",
+ov.text(0.223, Ec, r"$\pm E_m(\varphi)$", fontsize=5.9, va="center",
         color=C[0], zorder=5)
-ov.text(0.223, Ebot, r"$-\Delta^*$", fontsize=5.2, va="center",
+ov.text(0.223, Ebot, r"$-\Delta^*$", fontsize=5.9, va="center",
         zorder=5)
 ov.annotate("", xy=(0.066, 0.230), xytext=(0.066, 0.120), zorder=5,
             arrowprops=dict(arrowstyle="-|>", lw=0.6, color="0.30",
                             mutation_scale=5))
-ov.text(0.057, 0.220, "$E$", fontsize=5.2, ha="right", va="center",
+ov.text(0.057, 0.220, "$E$", fontsize=5.9, ha="right", va="center",
         zorder=5)
 ov.text(0.178, 0.072,
         r"$E_m=\pm\Delta^*\sqrt{1-\tau\sin^2(\varphi/2)}$",
-        fontsize=5.3, ha="center", va="center", zorder=5)
+        fontsize=5.9, ha="center", va="center", zorder=5)
 
 fig.savefig(os.path.join(os.path.dirname(__file__), "..", "figures",
                          "fig_device.pdf"))
