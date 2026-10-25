@@ -71,7 +71,9 @@ al.*, above), the code computes, among other things:
 - the frequency noise that the occupation noise would produce in a
   microwave resonator used to read out the junction (a measurable
   prediction);
-- energy-resolution budgets for detecting a single 26 GHz microwave photon.
+- the energy resolution of a two-body thermal model (electrons and Andreev
+  levels), and a self-consistent simulation of a single 26 GHz photon with
+  an ideal or a resonator readout.
 
 The full list is in
 [DETAILS.md](DETAILS.md#more-on-section-1-everything-the-code-computes).
@@ -83,6 +85,7 @@ brackets). All of them depend on the assumed tau_A.
 |---|---|
 | Ta/Ti/Au junction at 100 mK, tau_A = 1 microsecond, 1 s of averaging: temperature resolution limited by occupation noise [`dTA100`] versus by phonon noise [`dTph100`] | 50 microkelvin versus 2.1 microkelvin |
 | Predicted resonator frequency noise at 1 Hz for Ta/Ti/Au at Tc*/6 [`SnuTa`], versus the assumed quantum-limited readout floor [`SnuFloor`] | 198 versus 26 Hz per root hertz |
+| Self-consistent click simulation, 5.3 x 0.5 micrometer matched junction at 50 mK, tau_A = 30 ns, ideal readout: Kumar-Carroll index, exchange speeding up / constant [`kcFullT`, `kcFullC`] | 4.1 / 3.3 (1.6 with a 50 MHz resonator readout [`kcResFifty`]) |
 
 More results are in [Section 5](DETAILS.md#5-the-scripts-step-by-step).
 
@@ -94,7 +97,7 @@ More results are in [Section 5](DETAILS.md#5-the-scripts-step-by-step).
   [Section 7](DETAILS.md#7-the-python-modules)).
 - **scripts/**: the calculation and figure scripts (see
   [Section 5](DETAILS.md#5-the-scripts-step-by-step)).
-- **tests/**: three test files, with the expected screen output of each.
+- **tests/**: four test files, with the expected screen output of each.
 - **data/**: results stored in the repository.
 - `run_all.sh`: runs every step in order (bash).
 - At the top level you also find `requirements.txt`, `LICENSE`,
@@ -136,16 +139,17 @@ a shared 2-core Linux machine that was also running other jobs.
 python tests/test_abs.py
 python tests/test_noise.py
 python tests/test_general.py
+python tests/test_coupled.py
 ```
 
 Each file ends with `ALL ... TESTS PASSED`. The printed lines should match
-`tests/reference_output_abs.txt`, `reference_output_noise.txt` and
-`reference_output_general.txt`.
+`tests/reference_output_abs.txt`, `reference_output_noise.txt`,
+`reference_output_general.txt` and `reference_output_coupled.txt`.
 
-### Way B: make the fast results and all figures (about 25 seconds)
+### Way B: make the fast results and all figures (under a minute)
 
-The slow results (`limits.json`, `nonlinear_click.json`, the click traces)
-and the gap table are already stored in `data/`. So you only need the fast
+The slow results (`limits.json`, `click_coupled.json` and the two
+`click_coupled_*.npz` files) and the gap table are already stored in `data/`. So you only need the fast
 steps:
 
 ```
@@ -154,6 +158,7 @@ python scripts/exp_universal.py
 python scripts/exp_design.py
 python scripts/exp_matched_points.py
 python scripts/exp_calorimetry.py
+python scripts/exp_revision.py
 python scripts/fig_device.py
 python scripts/fig1.py
 python scripts/fig2.py
@@ -167,13 +172,13 @@ python scripts/make_numbers.py
 The figures appear in `figures/` as PDF files. The figure scripts do not
 create `figures/` themselves, so you need the `mkdir` line.
 
-### Way C: recompute everything from scratch (about 10 minutes)
+### Way C: recompute everything from scratch (about 15 minutes)
 
 ```
 bash run_all.sh
 ```
 
-`run_all.sh` runs the gap table, the three test files, the seven
+`run_all.sh` runs the gap table, the four test files, the eight
 calculation scripts, the seven figure scripts and `make_numbers.py`, in
 that order. Be aware that running Way C overwrites the stored files in
 `data/`.
@@ -197,7 +202,7 @@ holds:
   in the code contains.
 - [8. Where the numbers come from](DETAILS.md#8-where-the-numbers-come-from):
   the measured junction recipes, the derived values, and the assumed values.
-- [9. Built-in checks](DETAILS.md#9-built-in-checks): what the three test
+- [9. Built-in checks](DETAILS.md#9-built-in-checks): what the four test
   files and the checks inside the scripts cover.
 - [10. Notes on the calculations](DETAILS.md#10-notes-on-the-calculations):
   units, conventions, the two junction models, and other notes.
@@ -214,7 +219,7 @@ Please cite our manuscript. On GitHub you will also see a
 
 > T. M. Mahim, A. S. M. Mohsin, and M. M. Rahman, "Andreev-level
 > occupation noise in graphene Josephson thermal detectors: a sensitivity
-> floor and how to measure it" (manuscript).
+> floor and how to measure it" (manuscript under review).
 
 If you use the junction parameters, please also cite the measurements:
 
@@ -228,9 +233,9 @@ If you use the junction parameters, please also cite the measurements:
 
 Code: Apache License 2.0 (see `LICENSE`). Archived copies of the code
 with all generated data are on Zenodo under CC-BY-4.0. You can find every
-version listed at https://zenodo.org/records/22040477 (the DOI of the
-version used for the manuscript is given in its Data availability
-statement).
+version listed at https://zenodo.org/records/22040477. The version for
+the revised manuscript is v1.11, doi:10.5281/zenodo.23646142, as given in
+its Data availability statement.
 
 If you have a question or find a bug, please open an issue on this
 repository, or contact me, Tanvir M. Mahim, BRAC University

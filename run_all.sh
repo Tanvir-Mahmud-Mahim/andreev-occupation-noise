@@ -5,12 +5,14 @@ python3 scripts/make_bcs_table.py
 python3 tests/test_abs.py
 python3 tests/test_noise.py
 python3 tests/test_general.py
+python3 tests/test_coupled.py
 python3 scripts/exp_universal.py
 python3 scripts/exp_design.py
 python3 scripts/exp_matched_points.py
 python3 scripts/exp_calorimetry.py
 python3 scripts/exp_limits.py
-python3 scripts/exp_nonlinear_click.py
+python3 scripts/exp_revision.py
+python3 scripts/exp_click_coupled.py
 python3 scripts/fig_device.py
 python3 scripts/fig1.py
 python3 scripts/fig2.py

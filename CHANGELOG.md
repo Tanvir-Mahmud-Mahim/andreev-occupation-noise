@@ -4,6 +4,53 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Revision after peer review (25 October 2026)
+
+Changes made while answering the reviewers of Materials Today Physics.
+
+**New code**
+- `src/coupled.py`: electrons and Andreev levels as two coupled thermal
+  bodies linked by C_A/tau_A; noise-equivalent power, closed-form energy
+  resolution sigma_E = 2 sqrt(kB T^2 C_e) [x(1+x)]^(1/4) with
+  x = G_ep tau_A / C_A, numerical filter with readout floor and resonator
+  linewidth, corner time of the noise spectrum.
+- `src/click_sim.py`: self-consistent click simulation. The mean response
+  is fully nonlinear and returns the energy carried by exchanged
+  quasiparticles to the electrons; fluctuations use the instantaneous
+  rates and variances (linear-noise approximation, exact matrix
+  exponential per step); optional resonator readout with added noise;
+  whitened matched filter and Kumar-Carroll index.
+- `scripts/exp_click_coupled.py` replaces `scripts/exp_nonlinear_click.py`
+  (removed, together with `data/nonlinear_click.json` and both
+  `click_traces_*.npz`). New outputs `click_coupled.json` and
+  `click_coupled_{T,C}_3e-08.npz`.
+- `scripts/exp_revision.py`: electron-phonon exponents 3 to 6;
+  level-dependent (activated) exchange and the gap optimum when exchange is
+  mediated by thermal quasiparticles; two-body energy resolution of
+  recipes and matched designs; comparison with reported 1/f noise; Andreev
+  transition frequencies; energy balance of the photon response. Output
+  `revision.json`.
+- `tests/test_coupled.py` with reference output.
+
+**Changed**
+- `src/sensor_limits.py`: the numerical energy-resolution filter now
+  integrates to 1000/(2 pi min(tau_A, tau_th)) with 20000 points. The
+  earlier limit of 10/(2 pi min(...)) truncated the integral and
+  overstated sigma_E by about 4% at tau_A = 1 us and about 10% at 30 ns.
+- `scripts/exp_matched_points.py`, `exp_calorimetry.py`: matched designs
+  are now 5.3 x 0.2 um at 100 mK and 5.3 x 0.5 um at 50 mK (C_e about 8 to
+  10 kB). The 1 x 0.1 um design used before has C_e < 1 kB and is outside
+  linear response. The 50 mK designs are read at 3 GHz, below the pair
+  transition 2 Delta*/h = 5 GHz (6 GHz before).
+- `scripts/exp_design.py`, `make_numbers.py`, figure scripts: closed-form
+  two-body energy resolution; new and renamed numbers (90 values, 77 LaTeX
+  macros); figures redrawn at printed size with larger fonts; new Fig. 4
+  and Fig. S2.
+- `run_all.sh`: adds `test_coupled.py`, `exp_revision.py` and
+  `exp_click_coupled.py`.
+- `README.md` and `DETAILS.md` updated for the new code; the Zenodo
+  archive of this version is v1.11 (doi:10.5281/zenodo.23646142).
+
 ## Revised manuscript (2 October 2026)
 
 - Documentation follows the revised manuscript title, "Andreev-level
