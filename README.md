@@ -2,21 +2,26 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-This repository holds the code for our manuscript **"Andreev-level
-occupation noise in graphene Josephson thermal detectors: a sensitivity
-floor and how to measure it"**, which I wrote with A. S. M. Mohsin and
-M. M. Rahman. An earlier draft had another title (see
+This repository holds the code for our paper **"Andreev-level
+occupation noise in graphene Josephson thermal detectors: A sensitivity
+floor and how to measure it"**, which I wrote with Abu S. M. Mohsin and
+M. Mosaddequr Rahman. It is published in Materials Today Physics
+**69**, 102312 (2026), https://doi.org/10.1016/j.mtphys.2026.102312.
+An earlier draft had another title (see
 [DETAILS.md](DETAILS.md#more-on-the-introduction-an-earlier-title)).
 
 - Repository: https://github.com/Tanvir-Mahmud-Mahim/andreev-occupation-noise
+- Archived code and data (Zenodo): doi:10.5281/zenodo.23648106 (v1.13,
+  the version cited in the paper); all versions:
+  doi:10.5281/zenodo.22035740
 - Measured devices that the model is built on: W. Jung *et al.*,
   "Engineering Andreev bound states for thermal sensing in proximity
   Josephson junctions", Phys. Rev. Applied **26**, 014078 (2026),
   https://doi.org/10.1103/9lsg-mdb8 (preprint: arXiv:2503.06850)
 
 The scripts produce the data files in `data/` and the figures of the
-manuscript. According to `make_numbers.py`, they also produce every number
-quoted in the manuscript (`data/numbers.json`, see
+paper. According to `make_numbers.py`, they also produce every number
+quoted in the paper (`data/numbers.json`, see
 [Section 5](DETAILS.md#5-the-scripts-step-by-step)).
 
 ---
@@ -55,7 +60,7 @@ chance that a level is filled depends on temperature. So the current and
 the junction's inductance change with temperature, and the junction works
 as a thermometer and, in principle, as a photon detector.
 
-In our manuscript we point out that the same filling of the levels also
+In our paper we point out that the same filling of the levels also
 **flips randomly** in time, even at a perfectly steady temperature. This
 random "occupation noise" sets a floor on how finely the junction can
 measure temperature. The time over which a level keeps its filling is
@@ -213,13 +218,21 @@ holds:
 
 ## 12. How to cite
 
-Please cite our manuscript. On GitHub you will also see a
+Please cite our paper. On GitHub you will also see a
 **"Cite this repository"** button in the right-hand column, which reads
 `CITATION.cff`.
 
 > T. M. Mahim, A. S. M. Mohsin, and M. M. Rahman, "Andreev-level
-> occupation noise in graphene Josephson thermal detectors: a sensitivity
-> floor and how to measure it" (manuscript under review).
+> occupation noise in graphene Josephson thermal detectors: A sensitivity
+> floor and how to measure it", Materials Today Physics 69, 102312 (2026),
+> https://doi.org/10.1016/j.mtphys.2026.102312
+
+If you use the code or the data, please also cite the archived version:
+
+> T. M. Mahim, A. S. M. Mohsin, and M. M. Rahman, "Andreev-level
+> occupation noise in graphene Josephson thermal detectors: simulation
+> code, data, and testbench", Zenodo, v1.13 (2026),
+> https://doi.org/10.5281/zenodo.23648106
 
 If you use the junction parameters, please also cite the measurements:
 
@@ -232,10 +245,10 @@ If you use the junction parameters, please also cite the measurements:
 ## 13. License and contact
 
 Code: Apache License 2.0 (see `LICENSE`). Archived copies of the code
-with all generated data are on Zenodo under CC-BY-4.0. You can find every
-version listed at https://zenodo.org/records/22040477. The version for
-the revised manuscript is v1.13, doi:10.5281/zenodo.23648106, as given in
-its Data availability statement.
+with all generated data are on Zenodo under CC-BY-4.0. The DOI
+doi:10.5281/zenodo.22035740 always points to the latest version, and its
+page lists every version. The version cited in the Data availability
+statement of the published paper is v1.13, doi:10.5281/zenodo.23648106.
 
 If you have a question or find a bug, please open an issue on this
 repository, or contact me, Tanvir M. Mahim, BRAC University

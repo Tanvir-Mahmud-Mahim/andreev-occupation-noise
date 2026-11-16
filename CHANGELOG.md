@@ -4,6 +4,16 @@ All notable changes to this code are listed here, newest first. The
 repository has no releases or version tags; the entries below follow the
 git history.
 
+## Citation of the published paper (16 November 2026)
+
+No code, data or result changed; Zenodo v1.13 remains the archived version.
+
+- `README.md`, `DETAILS.md`, `CITATION.cff`: the paper is now cited as
+  published, Materials Today Physics 69, 102312 (2026),
+  https://doi.org/10.1016/j.mtphys.2026.102312. The README gives the
+  Zenodo DOI of v1.13 and the concept DOI that lists all versions
+  (doi:10.5281/zenodo.22035740), replacing a link to the v1.8 record.
+
 ## Documentation of the cooling law (25 October 2026, Zenodo v1.13)
 
 No model, data or result changed; the four test files give output

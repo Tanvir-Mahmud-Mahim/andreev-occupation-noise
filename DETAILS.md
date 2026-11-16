@@ -25,9 +25,10 @@ see [README.md](README.md).
 
 ### More on the introduction: an earlier title
 
-(An earlier draft of the manuscript was titled "Andreev
+(An earlier draft of the paper was titled "Andreev
 occupation noise sets the sensitivity limit of proximity Josephson thermal
-detectors".)
+detectors". The paper is published in Materials Today Physics 69, 102312
+(2026), https://doi.org/10.1016/j.mtphys.2026.102312.)
 
 ### More on Section 1: everything the code computes
 
@@ -374,8 +375,9 @@ the tests and two calibration factors were corrected. On 25 October 2026
 the code was extended for the revised manuscript: a two-body thermal model,
 a self-consistent photon click simulation that replaces
 `exp_nonlinear_click.py`, the analyses requested in review, a new test file,
-and a fix of the energy-resolution filter. The archived version for the
-revised manuscript is v1.13 on Zenodo (doi:10.5281/zenodo.23648106). It
+and a fix of the energy-resolution filter. The archived version cited in
+the published paper (Materials Today Physics 69, 102312 (2026)) is v1.13
+on Zenodo (doi:10.5281/zenodo.23648106). It
 differs from v1.11 only in the layout of the figures (v1.12) and in
 comments and documentation about the cooling law of Lee *et al.* (v1.13). The
 details are in [CHANGELOG.md](CHANGELOG.md).

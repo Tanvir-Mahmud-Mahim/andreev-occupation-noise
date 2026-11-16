@@ -1,25 +1,47 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite the manuscript below."
-title: "andreev-occupation-noise: simulation code for Andreev occupation noise in proximity Josephson thermal detectors"
+message: "If you use this code, please cite the article below and the archived version of the code."
+title: "Andreev-level occupation noise in graphene Josephson thermal detectors: simulation code, data, and testbench"
+type: software
 authors:
   - family-names: Mahim
     given-names: Tanvir M.
     affiliation: BRAC University
     email: tanvir.mahim@bracu.ac.bd
+    orcid: "https://orcid.org/0000-0002-4550-3248"
   - family-names: Mohsin
-    given-names: A. S. M.
+    given-names: Abu S. M.
+    affiliation: BRAC University
   - family-names: Rahman
-    given-names: M. M.
+    given-names: M. Mosaddequr
+    affiliation: BRAC University
+    orcid: "https://orcid.org/0000-0001-9004-6237"
+version: v1.13
+date-released: 2026-10-25
+doi: 10.5281/zenodo.23648106
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23648106
+    description: "Zenodo archive, version v1.13 (cited in the article)"
+  - type: doi
+    value: 10.5281/zenodo.22035740
+    description: "Zenodo concept DOI (all versions)"
 license: Apache-2.0
 repository-code: "https://github.com/Tanvir-Mahmud-Mahim/andreev-occupation-noise"
 preferred-citation:
-  type: unpublished
-  title: "Andreev-level occupation noise in graphene Josephson thermal detectors: a sensitivity floor and how to measure it"
+  type: article
+  title: "Andreev-level occupation noise in graphene Josephson thermal detectors: A sensitivity floor and how to measure it"
   authors:
     - family-names: Mahim
       given-names: Tanvir M.
-      affiliation: BRAC University
+      orcid: "https://orcid.org/0000-0002-4550-3248"
     - family-names: Mohsin
-      given-names: A. S. M.
+      given-names: Abu S. M.
     - family-names: Rahman
-      given-names: M. M.
+      given-names: M. Mosaddequr
+      orcid: "https://orcid.org/0000-0001-9004-6237"
+  journal: "Materials Today Physics"
+  volume: 69
+  start: 102312
+  year: 2026
+  doi: 10.1016/j.mtphys.2026.102312
+  url: "https://doi.org/10.1016/j.mtphys.2026.102312"
